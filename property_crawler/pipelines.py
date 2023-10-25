@@ -39,8 +39,6 @@ class PropertyCrawlerPipeline:
 class LoadToDynamodbPipeline:
     global urls_set 
     def open_spider(self, spider):
-        urls_set = set()
-        urls_set.add('HAHAHAHAHAHAHAHAH')
         self.session = boto3.Session(
             aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID'),
             aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY'),

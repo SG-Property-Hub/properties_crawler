@@ -24,13 +24,14 @@ class AttrModel(BaseModel):
     height: Decimal = None
     total_room: int = None
     bedroom: int = None
+    bathroom: int = None
     floor: Decimal = None
     direction: str = None
     interior: str = None
     feature: str = None
     type_detail: str = None
     certificate: str = None
-    built_year: str = None
+    built_year: int = None
     condition: str = None
     site_id: str = None
 
