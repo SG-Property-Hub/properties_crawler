@@ -1,0 +1,200 @@
+import scrapy
+import re
+from datetime import datetime
+import logging
+import json
+# from property_crawler.items import PropertyCrawlerItem
+from decimal import Decimal
+from bs4 import BeautifulSoup
+
+
+class Bds68Spider(scrapy.Spider):
+    name = "bds68"
+    start_urls = ['https://bds68.com.vn/nha-dat-ban']
+    num_page =1
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url, self.parse)
+            break
+    
+    def parse(self, response):
+        if response.status != 200:
+            logging.error("Error when scraping %s", response.url)
+            return
+        soup = BeautifulSoup(response.text, 'html.parser')
+        products = soup.select(".info-line.header-prop-title h4 a[href]")
+        if len(products) != 0:
+            urls = []
+            for product in products:
+                try:
+                    urls.append("https://bds68.com.vn/"+ product["href"])
+                except:
+                    pass
+
+            # logging.info("Scraping URL: %s", urls)
+
+            for url in urls:
+                yield scrapy.Request(url, callback=self.parse_item)
+                # break
+
+            self.num_page+=1   
+            next_page = "https://bds68.com.vn/nha-dat-ban?pg=" + str(self.num_page)
+            logging.info("Next page: %s", next_page)
+            yield response.follow(next_page, callback = self.parse)
+
+    def convert_price(self,price):
+        list_price = price.split(" ")
+        print(list_price)
+        sum_price = 0
+        for i in range(len(list_price)):
+            if list_price[i] == "tỷ":
+                sum_price+= float(list_price[i-1]) * (10**9)
+            elif list_price[i] == "triệu":
+                sum_price+= float(list_price[i-1]) * (10**6)
+        return int(sum_price)
+
+    def convert_main_info(self,main_info_string):
+        list_info_string = main_info_string.split("\n")
+        main_info={}
+        for info in list_info_string:
+            if info.find(":") != -1:
+                key,value = info.split(":")
+                main_info[key.strip()] = value.strip()
+        return main_info
+
+    def parse_item(self, response):
+        if response.status != 200:
+            logging.error("Error when scraping %s", response.url)
+            return
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        items = {}
+
+        title = soup.find("h1", class_="detail-prop-title").getText().strip()
+        items["title"] = title
+
+        items['site'] = 'bds68'
+        items["url"] = response.url
+
+        images_link = []
+        slides = soup.find("div",class_ = "swiper-wrapper").find_all("img")
+        for slide in slides:
+            try:
+                images_link.append(slide["data-src"])
+            except:
+                pass
+            try:
+                images_link.append(slide["data-src"])
+            except:
+                pass
+        items['images'] = images_link
+
+        description = soup.find("div",class_ = "readmore-box").getText()
+        items["description"] = description
+
+        # 'Loại Tin Rao', 'Dự Án', 'Giá', 'Diện Tích', 'Diện Tích Sử Dụng', 'Năm xây dựng', 'Số Phòng Ngủ', 'Số Phòng Tắm', 'Đường Trước Nhà', 'Mặt Tiền', 'Số Tầng', 'Mã Đăng Tin', 'Ngày Đăng'
+        main_info_string = soup.find("div", class_="prop-features").getText().replace("\r\n","")
+        main_info= self.convert_main_info(main_info_string)
+        items["price"]= self.convert_price(main_info["Giá"])
+        items["price_currency"] = "VND"
+
+        if 'Loại Tin Rao' in main_info:
+            items['property_type'] = main_info['Loại Tin Rao']
+        
+        if 'Ngày Đăng' in main_info:
+            value = main_info["Ngày Đăng"].split("-")[0].strip()
+            value = datetime.strptime(value, '%d/%m/%Y').strftime("%Y-%m-%d %H:%M:%S")
+            items['publish_at'] = value      
+
+        items["attr"]= {}
+        try:
+            if "Diện Tích" in main_info:
+                items['attr']["total_area"]=float(main_info["Diện Tích"].split(" ")[0])
+
+            if 'Diện Tích Sử Dụng' in main_info:
+                items['attr']['area'] = float(main_info["Diện Tích Sử Dụng"].split(" ")[0])
+
+            if 'Năm xây dựng' in main_info:
+                items["attr"]["built_year"]=main_info["Năm xây dựng"]
+
+            if 'Số Phòng Ngủ' in main_info:
+                items["attr"]["bedroom"]=main_info["Số Phòng Ngủ"]
+
+            if 'Số Phòng Tắm' in main_info:
+                items["attr"]["bathroom"] = main_info["Số Phòng Tắm"]
+            
+            if 'Mã Đăng Tin' in main_info:
+                items["attr"]["site_id"] = main_info["Mã Đăng Tin"]
+            
+            if 'Số Tầng' in main_info:
+                items["attr"]["floor"] = main_info["Số Tầng"]
+
+            if 'Mặt Tiền' in main_info:
+                items["attr"]["width"] = main_info["Mặt Tiền"]
+
+            if 'Dự Án' in main_info:
+                items['project'] = {}
+                items["project"]["name"] = main_info["Dự Án"]
+                link_project = "https://bds68.com.vn"+soup.find("div", class_="prop-features").find("a")["href"]
+                items["project"]["profile"]= link_project
+        except Exception as e:
+            print('Error when parse attr', e)
+            pass
+        
+        try:
+            features = soup.find_all("div",class_="fprop col-md-4 col-sm-6 col-xs-6")
+            if len(features) != 0:
+                features_str= ''
+                for feature in features:
+                    features_str+= feature.getText().strip() +','
+                items["attr"]["feature"] = features_str[:-1]
+        except Exception as e:
+            print('Error when parse attr', e)
+            pass
+        
+
+        items["location"]= {}
+
+        breadcumb = soup.find('div', class_="breadcrumbs").find_all("a")
+        address_list = []
+        address = ''
+        for i in breadcumb:
+            address_list.append(i.text)
+        items["location"]["city"] = address_list[2]
+        if len(address_list) >=4:
+            items["location"]["dist"] = address_list[3]
+            try:
+                for i in range(len(address_list)-1,1, -1):
+                    if (address_list[i].find("P.") !=-1 or address_list[i].find("X.") !=-1) and i>3:
+                        items["location"]["ward"]=address_list[i]
+                    elif address_list[i].find("Đ.") !=-1:
+                        items["location"]["street"]=address_list[i]
+                    address+=address_list[i]+","
+                items["location"]["address"] = address[:-1]
+            except Exception as e:
+                print('Error when parse location', e)
+                pass
+        
+        items['agent'] = {}
+
+        try:
+            items["agent"]["name"] = soup.find("h3", class_="one-line").getText()
+
+        except:
+            pass
+        
+        try:
+            tel = soup.find("a", class_="click_me")["href"].split(":")[1]
+            items["agent"]["phone_number"] = tel
+        except:
+            pass
+
+        try:
+            profile = soup.find("div",class_="seller-info-container box-3d").find("a")["href"]
+            items["agent"]["profile"] = 'https://bds68.com.vn'+ profile
+        except:
+            pass
+
+        yield items
