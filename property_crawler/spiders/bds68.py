@@ -28,7 +28,7 @@ class Bds68Spider(scrapy.Spider):
             urls = []
             for product in products:
                 try:
-                    urls.append("https://bds68.com.vn/"+ product["href"])
+                    urls.append("https://bds68.com.vn"+ product["href"])
                 except:
                     pass
 
@@ -45,7 +45,6 @@ class Bds68Spider(scrapy.Spider):
 
     def convert_price(self,price):
         list_price = price.split(" ")
-        print(list_price)
         sum_price = 0
         for i in range(len(list_price)):
             if list_price[i] == "tỷ":
@@ -86,7 +85,7 @@ class Bds68Spider(scrapy.Spider):
             except:
                 pass
             try:
-                images_link.append(slide["data-src"])
+                images_link.append(slide["src"])
             except:
                 pass
         items['images'] = images_link
@@ -111,28 +110,28 @@ class Bds68Spider(scrapy.Spider):
         items["attr"]= {}
         try:
             if "Diện Tích" in main_info:
-                items['attr']["total_area"]=float(main_info["Diện Tích"].split(" ")[0])
+                items['attr']["total_area"]=float(main_info["Diện Tích"].split(" ")[0].replace(",","."))
 
             if 'Diện Tích Sử Dụng' in main_info:
-                items['attr']['area'] = float(main_info["Diện Tích Sử Dụng"].split(" ")[0])
+                items['attr']['area'] = float(main_info["Diện Tích Sử Dụng"].split(" ")[0].replace(",","."))
 
             if 'Năm xây dựng' in main_info:
-                items["attr"]["built_year"]=main_info["Năm xây dựng"]
+                items["attr"]["built_year"]=int(main_info["Năm xây dựng"])
 
             if 'Số Phòng Ngủ' in main_info:
-                items["attr"]["bedroom"]=main_info["Số Phòng Ngủ"]
+                items["attr"]["bedroom"]=int(main_info["Số Phòng Ngủ"])
 
             if 'Số Phòng Tắm' in main_info:
-                items["attr"]["bathroom"] = main_info["Số Phòng Tắm"]
+                items["attr"]["bathroom"] =int(main_info["Số Phòng Tắm"])
             
             if 'Mã Đăng Tin' in main_info:
                 items["attr"]["site_id"] = main_info["Mã Đăng Tin"]
             
             if 'Số Tầng' in main_info:
-                items["attr"]["floor"] = main_info["Số Tầng"]
+                items["attr"]["floor"] = int(main_info["Số Tầng"])
 
             if 'Mặt Tiền' in main_info:
-                items["attr"]["width"] = main_info["Mặt Tiền"]
+                items["attr"]["width"] = float(main_info["Mặt Tiền"].split(" ")[0].replace(",","."))
 
             if 'Dự Án' in main_info:
                 items['project'] = {}
