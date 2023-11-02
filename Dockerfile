@@ -1,7 +1,11 @@
-FROM apache/airflow:2.7.0
+# Use an official Python runtime as a parent image
+FROM python:3.9.17-slim-buster
 
-USER airflow
+# Set the working directory to /app
+WORKDIR /app
 
-COPY requirements.txt requirements.txt
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-RUN pip install -r requirements.txt
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt

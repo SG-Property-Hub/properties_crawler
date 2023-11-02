@@ -1,0 +1,30 @@
+version: '3'
+services:
+  celery-worker:
+    build:
+      context: .
+      args:
+        - PRODUCTION_DATABASE_URL=${PRODUCTION_DATABASE_URL}
+    command: celery -A property_crawler worker -Q crawl_list,crawl_item,io,crawl_images,update -n embery-1 -c 12 --purge
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - DYNAMODB_RAW_TABLE=${DYNAMODB_RAW_TABLE}
+  celery-flower:
+    build:
+      context: .
+      args:
+        - PRODUCTION_DATABASE_URL=${PRODUCTION_DATABASE_URL}
+    command: celery -A property_crawler flower
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - DYNAMODB_RAW_TABLE=${DYNAMODB_RAW_TABLE}

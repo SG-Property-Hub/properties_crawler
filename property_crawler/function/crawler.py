@@ -1,31 +1,33 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-from decimal import Decimal
-from pydantic import BaseModel, HttpUrl, ValidationError
+import pytz
+from datetime import date, datetime
 from typing import List, Optional, Literal
+from pydantic import BaseModel, validator
+from pydantic.networks import HttpUrl
+
+from .site_crawler.mogi import (
+    mogi_item, mogi_list)
+
 
 class LocationModel(BaseModel):
     city: str
     dist: str
     ward: str = None
     street: str = None
-    long: Decimal = None
-    lat: Decimal = None
+    long: float = None
+    lat: float = None
     address: str = None
     description: str = None
 
 class AttrModel(BaseModel):
-    area: Decimal = None
-    total_area: Decimal = None
-    width: Decimal = None
-    length: Decimal = None
-    height: Decimal = None
+    area: float = None
+    total_area: float = None
+    width: float = None
+    length: float = None
+    height: float = None
     total_room: int = None
     bedroom: int = None
     bathroom: int = None
-    floor: Decimal = None
+    floor: float = None
     direction: str = None
     interior: str = None
     feature: str = None
@@ -53,8 +55,9 @@ class PropertyCrawlerItem(BaseModel):
     title: str
     url: HttpUrl
     site: str
-    price: int
-    price_currency: str
+    price: int = None
+    price_currency: str = 'VND'
+    price_string: str
     images: List[HttpUrl]
     thumbnail: HttpUrl #automatic create thumbnail
     description: str
@@ -79,3 +82,12 @@ def validate_item(item, is_raw=True):
         Exception: Validation failed
     '''
     return PropertyCrawlerItem(**item)
+
+
+crawler = {
+    'mogi': {
+        'list': mogi_list,
+        'item': mogi_item,
+    },
+   
+}
