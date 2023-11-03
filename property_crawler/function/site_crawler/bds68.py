@@ -47,11 +47,13 @@ def convert_main_info(main_info_string):
             key,value = info.split(":")
             main_info[key.strip()] = value.strip()
     if main_info["Giá"] == "Thỏa Thuận":
-        main_info["Giá_tt"] ="Thỏa Thuận" 
+        main_info["Giá_tt"] ="Thỏa Thuận"
+    else:
+        main_info["Giá_tt"]= main_info["Giá"]
     return main_info
 
 def bds68_item(url):
-    time.sleep(1)
+    time.sleep(2)
     res = requests.get(url)    
     soup = BeautifulSoup(res.text, 'html.parser')
     items = {}
@@ -81,9 +83,10 @@ def bds68_item(url):
     # 'Loại Tin Rao', 'Dự Án', 'Giá', 'Diện Tích', 'Diện Tích Sử Dụng', 'Năm xây dựng', 'Số Phòng Ngủ', 'Số Phòng Tắm', 'Đường Trước Nhà', 'Mặt Tiền', 'Số Tầng', 'Mã Đăng Tin', 'Ngày Đăng'
     main_info_string = soup.find("div", class_="prop-features").getText().replace("\r\n","")
     main_info= convert_main_info(main_info_string)
-    try:
-        items["price_string"]=main_info["Giá_tt"] 
-    except:
+    if main_info["Giá_tt"] == "Thỏa Thuận":
+        items["price_string"]= main_info["Giá_tt"]
+    else:
+        items["price_string"]= main_info["Giá_tt"]
         items["price"]= convert_price(main_info["Giá"])
     items["price_currency"] = "VND"
 
