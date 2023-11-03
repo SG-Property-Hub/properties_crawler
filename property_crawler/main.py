@@ -18,7 +18,9 @@ site_urls = {
     'mogi': [
         'https://mogi.vn/mua-nha-dat'
     ],
-    
+    'bds68':[
+        'https://bds68.com.vn/nha-dat-ban?pg=1'
+    ]
 }
 
 sites_list = ['mogi' 

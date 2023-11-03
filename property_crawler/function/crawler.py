@@ -6,7 +6,8 @@ from pydantic.networks import HttpUrl
 
 from .site_crawler.mogi import (
     mogi_item, mogi_list)
-
+from .site_crawler.bds68 import (
+    bds68_item, bds68_list)
 
 class LocationModel(BaseModel):
     city: str
@@ -69,7 +70,7 @@ class PropertyCrawlerItem(BaseModel):
     location: LocationModel
     attr: AttrModel
     agent: Optional[AgentModel]
-    project: Optional[ProjectModel]
+    project: ProjectModel = None
 
 
 def validate_item(item, is_raw=True):
@@ -89,5 +90,8 @@ crawler = {
         'list': mogi_list,
         'item': mogi_item,
     },
-   
+    'bds68':{
+        'list': bds68_list,
+        'item': bds68_item,
+    }
 }
