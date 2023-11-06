@@ -8,7 +8,7 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
 
-def muanha_list(url = None):
+def muaban_list(url = None):
     crawl_url = "https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset=0"
     if url:
         crawl_url=url
@@ -17,7 +17,7 @@ def muanha_list(url = None):
     if len(products)  > 0 :
         urls = []
         for product in products["items"]:
-            url = "https://muaban.net/listing/v1/classifieds/{}/detail".format(products["id"])
+            url = "https://muaban.net/listing/v1/classifieds/{}/detail".format(product["id"])
             urls.append(url)
         num_offset = int(crawl_url.split("offset=")[1])
         next_page = "https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset="+str(num_offset +20)
@@ -53,7 +53,7 @@ def convert_area_info(area_string):
         info["length"]=length
     return info
     
-def muanha_item(url):
+def muaban_item(url):
     res = requests.get(url)
     data = res.json()
     item ={}
@@ -66,7 +66,8 @@ def muanha_item(url):
     
     item["price"] = data['price']
     
-    item["price_string"] = data['price_display'].replace(".","")
+    #item["price_string"] = data['price_display'].replace(".","")
+    item["price_string"] = data['price_display']
     
     images_link=[]
     for image in data["images"]:
@@ -75,13 +76,10 @@ def muanha_item(url):
     
     item["description"] = data['body']
     
-    date = data["publish_at"]
-    datetime_obj = datetime.fromisoformat(date)
-    formatted_date = datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
-    item["publish_at"] = formatted_date
+    date = data["publish_at"].split(".")[0].replace("T"," ")
+    item["publish_at"] = date
     
-    
-    item["location"] = convert_address_info(data['convert_address_info'])
+    item["location"] = convert_address_info(data['address'])
     
     #'Loại hình nhà ở', 'Dự án', 'Diện tích đất', 'Số phòng ngủ', 'Số phòng vệ sinh', 'Tổng số tầng', 'Hướng cửa chính', 'Hướng ban công', 'Giấy tờ pháp lý', 'Điểm nổi bật'
     #{'Loại hình nhà ở': 'Biệt thự, Villa', 'Dự án': 'KBT Vườn Cọ Palm Garden', 'Diện tích đất': '205,5 m² (10,0x20,5)', 'Số phòng ngủ': '5 phòng', 'Số phòng vệ sinh': '4 WC', 'Tổng số tầng': '3', 'Hướng cửa chính': 'Đông Nam', 'Hướng ban công': 'Tây Bắc', 'Giấy tờ pháp lý': 'Sổ đỏ', 'Điểm nổi bật': '<ul><li>Giao nhà ngay</li></ul>'}
@@ -91,7 +89,11 @@ def muanha_item(url):
     
     if 'Loại hình nhà ở' in main_info:
         item["property_type"] = main_info['Loại hình nhà ở']
-    
+    if 'Loại hình đất' in main_info:
+        item["property_type"] = main_info['Loại hình đất']
+    if 'Loại hình căn hộ' in main_info:
+        item["property_type"] = main_info['Loại hình căn hộ']
+        
     item["attr"] = {} 
     item["attr"]["site_id"] = data['id']
     try:
@@ -117,8 +119,9 @@ def muanha_item(url):
             item["attr"]["certificate"] = main_info['Giấy tờ pháp lý']
         
         if 'Điểm nổi bật' in main_info:
-            item["attr"]["feature"] = main_info['Điểm nổi bật'].replace("</li><li>",",").replace("</li></ul>","").replace("<ul><li>","")
-        
+            #item["attr"]["feature"] = main_info['Điểm nổi bật'].replace("</li><li>",",").replace("</li></ul>","").replace("<ul><li>","")
+            item["attr"]["feature"] = main_info['Điểm nổi bật']
+            
         if 'Dự án' in main_info:
             item["project"] = {}
             item["project"]["name"] = main_info["Dự án"]
@@ -148,3 +151,4 @@ def muanha_item(url):
         item["agent"]["profile"] = agent_profile
     except: 
         pass
+    return item

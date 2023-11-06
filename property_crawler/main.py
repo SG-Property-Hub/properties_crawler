@@ -20,6 +20,9 @@ site_urls = {
     ],
     'bds68':[
         'https://bds68.com.vn/nha-dat-ban?pg=1'
+    ],
+    'muaban':[
+        'https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset=0'
     ]
 }
 
