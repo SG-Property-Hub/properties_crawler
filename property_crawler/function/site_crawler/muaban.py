@@ -14,7 +14,7 @@ def muaban_list(url = None):
         crawl_url=url
     res = requests.get(crawl_url)
     products = res.json()
-    if len(products)  > 0 :
+    if len(products["items"])  > 0 :
         urls = []
         for product in products["items"]:
             url = "https://muaban.net/listing/v1/classifieds/{}/detail".format(product["id"])
