@@ -10,6 +10,8 @@ from .site_crawler.bds68 import (
     bds68_item, bds68_list)
 from .site_crawler.muaban import (
     muaban_item, muaban_list)
+from .site_crawler.nhatot import (
+    nhatot_item, nhatot_list)
 
 class LocationModel(BaseModel):
     city: str
@@ -99,5 +101,9 @@ crawler = {
     'muaban':{
         'list': muaban_list,
         'item': muaban_item,
+    },
+    'nhatot':{
+        'list': nhatot_list,
+        'item': nhatot_item,
     }
 }
