@@ -19,42 +19,44 @@ class LocationModel(BaseModel):
     ward: str = None
     street: str = None
     long: float = None
-    lat: float = None
-    address: str = None
-    description: str = None
+    lat: float = None       
+    address: str = None     #address of house
+    description: str = None #description of location: gan truong hoc, gan benh vien, hem xe hoi, ...
 
 class AttrModel(BaseModel):
-    area: float = None
-    total_area: float = None
-    width: float = None
-    length: float = None
-    height: float = None
-    total_room: int = None
-    bedroom: int = None
-    bathroom: int = None
-    floor: float = None
-    direction: str = None
-    interior: str = None
-    feature: str = None
-    type_detail: str = None
-    certificate: str = None
-    built_year: int = None
-    condition: str = None
-    site_id: str = None
+    area: float = None      #area of house: dien tich dat, dien tich 1 san, ...
+    total_area: float = None #total area of house: dien tich su dung, dien tich toan bo san, ...
+    width: float = None     #width of house: 5
+    length: float = None    #length of house: 20
+    height: float = None    #height of house: 10
+    total_room: int = None  #number of room: 5 | if total_room > n then total_room = n
+    bedroom: int = None     #number of bedroom: 3 | if bedroom > n then bedroom = n
+    bathroom: int = None    #number of bathroom: 2 | if bathroom > n then bathroom = n
+    floor: float = None     #number of floor: 5  | if floor > n then floor = n
+    floor_num: float = None #floor number [aparment or something like that]: 19
+    direction: str = None   #direction of house
+    interior: str = None    #everything related to interior
+    feature: str = None     #everything related to feature: pool, garden, ...
+    type_detail: str = None #everything related to type_detail: shophouse, ...
+    certificate: str = None #certificate of house: so hong, vi bang, ...
+    built_year: int = None  #year of house built
+    condition: str = None   #condition of house: new, old, ...
+    site_id: str = None     #id of item in site
 
 class AgentModel(BaseModel):
     name: str = None
-    agent_type: str = None
+    agent_type: str = None  #type of agent: owner, agent, cong ty bds...
     phone_number: str = None
-    email: str = None
-    address: str = None
-    profile: str = None
+    email: str = None       #email of agent
+    address: str = None     #address of agent
+    profile: str = None     #link to agent profile
     
 
 class ProjectModel(BaseModel):
-    name: str = None
-    profile: str = None
+    name: str = None        #name of project
+    profile: str = None     #link to project profile
 
+#EVERTHING SHOULD BE IN RAW FORMAT
 class PropertyCrawlerItem(BaseModel):
     id: str
     title: str
@@ -63,7 +65,7 @@ class PropertyCrawlerItem(BaseModel):
     price: int = None
     price_currency: str = 'VND'
     price_string: str
-    images: List[HttpUrl]
+    images: List[HttpUrl] = []  
     thumbnail: HttpUrl #automatic create thumbnail
     description: str
     property_type: str 

@@ -45,7 +45,7 @@ def mogi_item(url):
     script_data = json.loads(script.text)
     
     title = main_info.find('div', class_='title').text.strip('\n').strip()
-    item['title'] = title
+    # item['title'] = title
 
     item['site'] = 'mogi'
     item['url'] = url

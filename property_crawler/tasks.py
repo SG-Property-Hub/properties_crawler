@@ -109,8 +109,11 @@ def crawl_item(self, site, url, save_local = False):
             pytz.timezone('Australia/Sydney')).strftime("%Y-%m-%d %H:%M:%S")
         item['update_at'] = datetime.datetime.now(
             pytz.timezone('Australia/Sydney')).strftime("%Y-%m-%d %H:%M:%S")
-        
-        item['thumbnail'] = item['images'][0]
+
+        try:
+            item['thumbnail'] = item['images'][0]
+        except:
+            item['thumbnail'] = None
 
         try:
             if 'price_string' not in item and 'price' in item:
