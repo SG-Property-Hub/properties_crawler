@@ -20,6 +20,12 @@ site_urls = {
     ],
     'bds68':[
         'https://bds68.com.vn/nha-dat-ban?pg=1'
+    ],
+    'muaban':[
+        'https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset=0'
+    ],
+    'nhatot':[
+        'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=1001&area_v2=100107&key_param_included=true'   
     ]
 }
 
