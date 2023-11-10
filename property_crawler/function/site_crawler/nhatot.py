@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 
 def nhatot_list(url = None):
-    with open('region_id.json') as json_file:
+    with open('input_data/nhatot.json') as json_file:
         json_data = json.load(json_file)
     geo,region_idx,idx_region= json_data
     
