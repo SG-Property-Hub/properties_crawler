@@ -101,15 +101,16 @@ def bds68_item(url):
     items["attr"]= {}
     try:
         if "Diện Tích" in main_info:
-            items['attr']["total_area"]=float(main_info["Diện Tích"].split(" ")[0].replace(",","."))
+            items['attr']["area"]=float(main_info["Diện Tích"].split(" ")[0].replace(",","."))
 
         if 'Diện Tích Sử Dụng' in main_info:
             value = float(main_info["Diện Tích Sử Dụng"].split(" ")[0].replace(",","."))
-            if items["attr"]["total_area"] < value:
+            if items["attr"]["area"] > value:
                 items["attr"]["area"] = items["attr"]["total_area"]
-                items["attr"]["total_area"] = value
+                items["attr"]["total_area"]= value
             else:
                 items["attr"]["area"] = value
+        
         
         if 'Năm xây dựng' in main_info:
             items["attr"]["built_year"]=int(main_info["Năm xây dựng"])

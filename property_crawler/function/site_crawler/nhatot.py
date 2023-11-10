@@ -3,16 +3,16 @@ import re
 from datetime import datetime
 import logging
 import json
+import time
 # from property_crawler.items import PropertyCrawlerItem
 from decimal import Decimal
 from bs4 import BeautifulSoup
-import time
+
 
 def nhatot_list(url = None):
     with open('/home/etsu_daemon/project/property-crawler/property_crawler/function/site_crawler/region_id.json') as json_file:
         json_data = json.load(json_file)
     geo,region_idx,idx_region= json_data
-    
     
     crawl_url = 'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'
     if url:
@@ -53,13 +53,14 @@ def nhatot_list(url = None):
             raise Exception('Crawling Finished')
         
 def nhatot_item(url):
+    time.sleep(1)
     res = requests.get(url)
     data = res.json()
     item ={}
     
     item["title"] = data["ad"]['subject']
     
-    item["url"] = "https://www.nhatot.com/mua-ban-dat-thanh-pho-soc-trang-soc-trang/{}.htm#px=SR-stickyad-[PO-1][PL-top]".format(data["ad"]["list_id"])
+    item["url"] = "https://www.nhatot.com/{}.htm#px=SR-stickyad-[PO-1][PL-top]".format(data["ad"]["list_id"])
     
     item["site"] = 'nhatot'
     
@@ -67,14 +68,17 @@ def nhatot_item(url):
     
     item["price_string"]= data["ad"]['price_string']
     
-    item['images'] = data["ad"]["images"]
+    if 'images' in data["ad"]:
+        item['images'] = data["ad"]["images"]
+    else:
+        item['images'] = []
     
     item["description"]= data["ad"]["body"]
     
     item["property_type"]= data["ad"]["category_name"]
     
-    time = data["ad"]["list_time"] #/1000 to convert ms to s
-    item["publish_at"] = datetime.fromtimestamp(time/1000).strftime("%Y-%m-%d %H:%M:%S")
+    time_value = data["ad"]["list_time"] #/1000 to convert ms to s
+    item["publish_at"] = datetime.fromtimestamp(time_value/1000).strftime("%Y-%m-%d %H:%M:%S")
     
     item["location"] = {}
     item["location"]["city"] = data["ad"]["region_name"]
@@ -102,13 +106,13 @@ def nhatot_item(url):
             attr_data[info["label"]] = info["value"]
         
         if 'Diện tích' in attr_data:
-            item["attr"]["total_area"] = float(attr_data["Diện tích"].split(" ")[0])
+            item["attr"]["area"] = float(attr_data["Diện tích"].split(" ")[0])
             
         if 'Diện tích sử dụng' in attr_data:
             value = float(attr_data["Diện tích sử dụng"].split(" ")[0])
-            if item["attr"]["total_area"] < value:
+            if item["attr"]["area"] > value:
                 item["attr"]["area"] = item["attr"]["total_area"]
-                item[["attr"]["total_area"]] = value
+                item["attr"]["total_area"]= value
             else:
                 item["attr"]["area"] = value
         
@@ -119,16 +123,24 @@ def nhatot_item(url):
             item["attr"]["length"] = float(attr_data['Chiều dài'].split(" ")[0])
         
         if 'Số phòng ngủ' in attr_data: #nhieu hon 10
-            item["attr"]["bedroom"] = int(attr_data['Số phòng ngủ'].split(" ")[0])
-        
+            list_info = attr_data['Số phòng ngủ'].split(" ")
+            if len(list_info) == 2:
+                item["attr"]["bedroom"] = int(list_info[0])
+            else:
+                item["attr"]["bedroom"] = int(list_info[2])
+                
         if 'Số phòng vệ sinh' in attr_data: # nhieu hon 6
-            item["attr"]["bathroom"] = int(attr_data['Số phòng vệ sinh'].split(" ")[0]) 
+            list_info = attr_data['Số phòng vệ sinh'].split(" ")
+            if len(list_info) == 2:
+                item["attr"]["bedroom"] = int(list_info[0])
+            else:
+                item["attr"]["bedroom"] = int(list_info[2])
         
         if 'Tổng số tầng' in attr_data:
             item["attr"]["floor"] = int(attr_data["Tổng số tầng"])
         
         if 'Tầng số' in attr_data:
-            item["attr"]["floor"] = int(attr_data["Tầng số"])
+            item["attr"]["floor_num"] = int(attr_data["Tầng số"])
         
         if 'Hướng cửa chính' in attr_data:
             item["attr"]['direction'] = attr_data["Hướng cửa chính"]
@@ -137,7 +149,10 @@ def nhatot_item(url):
             item["attr"]['interior'] = attr_data["Tình trạng nội thất"]
         
         if 'Đặc điểm nhà/đất' in attr_data:
-            item["attr"]['feature'] = attr_data["Đặc điểm nhà/đất"]
+            item["location"]["description"] = attr_data["Đặc điểm nhà/đất"]
+           
+        if 'Đặc điểm căn hộ' in attr_data:
+            item["location"]["description"] = attr_data["Đặc điểm căn hộ"]
             
         if 'Loại hình nhà ở' in attr_data:
             item["attr"]['type_detail'] = attr_data["Loại hình nhà ở"]
@@ -168,7 +183,7 @@ def nhatot_item(url):
         print('Error when parse agent', e)
         pass
     try:
-        profile='https://www.chotot.com/user/{}?_gl=1*1lxg3b5*_gcl_au*MzAyNDU0NjE1LjE2OTkzMzM3NzE.*_ga*NjI0ODQzNjc3LjE2OTkzMzM3NzI.*_ga_XQVN5K27XX*MTY5OTQxMDk2Mi43LjEuMTY5OTQxMzI4OC41Ny4wLjA.&_ga=2.259256265.2109845812.1699333772-624843677.1699333772#xtatc=INT-10-[Adview]'.format(data["ad"]["account_oid"])
+        profile='https://www.chotot.com/user/{}'.format(data["ad"]["account_oid"])
         item["agent"]["profile"] = profile
     except Exception as e:
         print('Error when parse agent', e)

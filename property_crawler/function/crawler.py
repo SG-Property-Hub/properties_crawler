@@ -66,7 +66,7 @@ class PropertyCrawlerItem(BaseModel):
     price_currency: str = 'VND'
     price_string: str
     images: List[HttpUrl] = []  
-    thumbnail: HttpUrl #automatic create thumbnail
+    thumbnail: HttpUrl = None #automatic create thumbnail
     description: str
     property_type: str 
     # property_type: Literal['apartment', 'house', 'land', 'shop']
