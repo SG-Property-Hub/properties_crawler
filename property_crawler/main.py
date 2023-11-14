@@ -26,6 +26,9 @@ site_urls = {
     ],
     'nhatot':[
         'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'   
+    ],
+    'batdongsan_so':[
+        'https://batdongsan.so/api/v1/home/demand/1/posts?page=1'
     ]
 }
 
