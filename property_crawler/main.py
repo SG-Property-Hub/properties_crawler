@@ -29,6 +29,9 @@ site_urls = {
     ],
     'batdongsan_so':[
         'https://batdongsan.so/api/v1/home/demand/1/posts?page=1'
+    ],
+    'ibatdongsan':[
+        'https://i-batdongsan.com/can-ban-nha-dat.htm'
     ]
 }
 
