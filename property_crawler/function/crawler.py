@@ -16,7 +16,11 @@ from .site_crawler.batdongsan_so import (
     batdongssan_so_item, batdongssan_so_list)
 from .site_crawler.ibatdongsan import (
     ibatdongsan_item, ibatdongsan_list)
-
+from .site_crawler.batdongsanonline import(
+    batdongsanonline_item,batdongsanonline_list)
+from .site_crawler.bds123 import(
+    bds123_item,bds123_list
+)
 class LocationModel(BaseModel):
     city: str
     dist: str
@@ -119,5 +123,13 @@ crawler = {
     'ibatdongsan':{
         'list': ibatdongsan_list,
         'item': ibatdongsan_item,
+    },
+    'batdongsanonline':{
+        'list': batdongsanonline_list,
+        'item': batdongsanonline_item
+    },
+    'bds123':{
+        'list': bds123_list,
+        'item': bds123_item
     }
 }

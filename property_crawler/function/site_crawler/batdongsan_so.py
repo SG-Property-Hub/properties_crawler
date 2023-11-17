@@ -104,7 +104,7 @@ def batdongssan_so_item(url):
             item["attr"]["direction"] = main_info["Hướng"]
         
         if 'Mặt tiền' in main_info:
-            item["attr"]["width"] = main_info["Mặt tiền"]
+            item["attr"]["width"] = float(main_info["Mặt tiền"])
             
         if 'Số toilet' in main_info:
             item["attr"]["bathroom"] = int(main_info['Số toilet'])
@@ -114,9 +114,9 @@ def batdongssan_so_item(url):
         
         if 'Số tầng' in main_info:
             if item["property_type"] == 'căn hộ - chung cư':
-                item["attr"]["floor_num"] = main_info["Số tầng"]
+                item["attr"]["floor_num"] = int(main_info["Số tầng"])
             else:
-                item["attr"]["floor"] = main_info["Số tầng"]
+                item["attr"]["floor"] = int(main_info["Số tầng"])
     except Exception as e:
         print('Error when parse attr', e)
         pass

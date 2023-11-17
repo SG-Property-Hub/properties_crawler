@@ -32,6 +32,12 @@ site_urls = {
     ],
     'ibatdongsan':[
         'https://i-batdongsan.com/can-ban-nha-dat.htm'
+    ],
+    'batdongsanonline':[
+        'https://batdongsanonline.vn/mua-ban-dat/?page=1'
+    ],
+    'bds123':[
+        'https://bds123.vn/nha-dat-ban.html?page=1'
     ]
 }
 
