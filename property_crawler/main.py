@@ -38,6 +38,9 @@ site_urls = {
     ],
     'bds123':[
         'https://bds123.vn/nha-dat-ban.html?page=1'
+    ],
+    'w123nhadatviet':[
+        'https://123nhadatviet.com/rao-vat/can-ban/nha-dat.html'
     ]
 }
 

@@ -58,7 +58,7 @@ def convert_area_info(area_string):
     return info
 
 def bds123_item(url):
-
+    time.sleep(2)
     res = requests.get(url)    
     soup = BeautifulSoup(res.text, 'html.parser')
     item = {}

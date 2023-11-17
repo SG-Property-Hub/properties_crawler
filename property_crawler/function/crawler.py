@@ -21,6 +21,9 @@ from .site_crawler.batdongsanonline import(
 from .site_crawler.bds123 import(
     bds123_item,bds123_list
 )
+from.site_crawler.w123nhadatviet import(
+    w123nhadatviet_item,w123nhadatviet_list
+)
 class LocationModel(BaseModel):
     city: str
     dist: str
@@ -131,5 +134,9 @@ crawler = {
     'bds123':{
         'list': bds123_list,
         'item': bds123_item
+    },
+    'w123nhadatviet':{
+        'list':w123nhadatviet_list,
+        'item':w123nhadatviet_item
     }
 }
