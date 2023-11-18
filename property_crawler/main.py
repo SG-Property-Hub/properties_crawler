@@ -41,6 +41,9 @@ site_urls = {
     ],
     'w123nhadatviet':[
         'https://123nhadatviet.com/rao-vat/can-ban/nha-dat.html'
+    ],
+    'nhadat24h':[
+        'https://nhadat24h.net/nha-dat-ban/page1'
     ]
 }
 

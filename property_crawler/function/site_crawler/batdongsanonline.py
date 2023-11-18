@@ -122,7 +122,7 @@ def batdongsanonline_item(url):
     
     item["attr"] = {}
     area = soup.find_all("span",class_="sp2")[1].get_text().strip()
-    item["attr"]["area"]= float(area.split(" ")[0].replace(",","."))
+    item["attr"]["area"]=item["attr"]["total_area"]= float(area.split(" ")[0].replace(",","."))
     item["attr"]["site_id"]=detail[0].get_text().split(": ")[1].strip()
     try:
         main_info_doc= soup.find("div",id="tab-info").find_all("li")
