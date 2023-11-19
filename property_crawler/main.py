@@ -44,6 +44,9 @@ site_urls = {
     ],
     'nhadat24h':[
         'https://nhadat24h.net/nha-dat-ban/page1'
+    ],
+    'houseviet':[
+        'https://houseviet.vn/nha-dat-ban'
     ]
 }
 

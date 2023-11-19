@@ -24,6 +24,10 @@ from.site_crawler.w123nhadatviet import(
     w123nhadatviet_item,w123nhadatviet_list)
 from .site_crawler.nhadat24h import(
     nhadat24h_item,nhadat24h_list)
+from .site_crawler.houseviet import(
+    houseviet_item,houseviet_list
+)
+
 class LocationModel(BaseModel):
     city: str
     dist: str
@@ -142,5 +146,9 @@ crawler = {
     'nhadat24h':{
         'list':nhadat24h_list,
         'item':nhadat24h_item
+    },
+    'houseviet':{
+        'list':houseviet_list,
+        'item':houseviet_item
     }
 }
