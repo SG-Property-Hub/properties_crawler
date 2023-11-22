@@ -8,8 +8,9 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
 
-def ibatdongsan_list(url = None):
-    crawl_url = 'https://i-batdongsan.com/can-ban-nha-dat.htm'
+
+def w123nhadatviet_list(url = None):
+    crawl_url = 'https://123nhadatviet.com/rao-vat/can-ban/nha-dat.html'
     if url:
         crawl_url = url
     res = requests.get(crawl_url)
@@ -20,15 +21,15 @@ def ibatdongsan_list(url = None):
         urls = []
         for product in products:
             try:
-                url = "https://i-batdongsan.com"+ product.find("a")["href"]
+                url = "https://123nhadatviet.com"+ product.find("a")["href"]
                 urls.append(url)
             except:
                 pass
         try:
-            num_cur_page = int(crawl_url.split("/p")[1].split(".")[0])
-            next_page = "https://i-batdongsan.com/can-ban-nha-dat/p" + str(num_cur_page + 1)+".htm"
+            num_cur_page = int(crawl_url.split("--")[1].split(".")[0])
+            next_page = "https://123nhadatviet.com/rao-vat/can-ban/nha-dat/trang--" + str(num_cur_page + 1)+".html"
         except:
-            next_page = "https://i-batdongsan.com/can-ban-nha-dat/p2.htm"
+            next_page = "https://123nhadatviet.com/rao-vat/can-ban/nha-dat/trang--2.html"
         return {'urls': urls, 'next_page': next_page}
     else:
          raise Exception('Crawling Finished')
@@ -73,7 +74,7 @@ def convert_address_info(address):
             info[list_loc[i]] = list_info[len(list_info) - i -1]
     return info
 
-def ibatdongsan_item(url):
+def w123nhadatviet_item(url):
     time.sleep(2)
     res = requests.get(url)    
     soup = BeautifulSoup(res.text, 'html.parser')
@@ -82,7 +83,7 @@ def ibatdongsan_item(url):
     title = soup.find("div",class_="title").get_text()
     item["title"]=title
     
-    item["site"] = 'i-batdongsan'
+    item["site"] = '123nhadatviet'
     item["url"] = res.url
     
     main_info_doc = soup.find("div",class_='infor').find("table")
@@ -96,7 +97,7 @@ def ibatdongsan_item(url):
     try:
         images = soup.find("div",class_="image-list").find_all("img")
         for image in images:
-            img_url = 'https://i-batdongsan.com'+ image['src']
+            img_url = 'https://123nhadatviet.com'+ image['src']
             images_list.append(img_url)
     except:
         pass
@@ -168,3 +169,4 @@ def ibatdongsan_item(url):
         pass
     
     return item
+
