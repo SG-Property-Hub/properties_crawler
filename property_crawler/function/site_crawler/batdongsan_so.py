@@ -12,7 +12,7 @@ def batdongssan_so_list(url = None):
     crawl_url = 'https://batdongsan.so/api/v1/home/demand/1/posts?page=1'
     if url:
         crawl_url = url
-    time.sleep(1)
+    # time.sleep(1)
     res = requests.get(crawl_url)
     products = res.json()
     if len(products["data"]) > 0:
@@ -49,8 +49,9 @@ def convert_main_info(main_info_string):
     return main_info
 
 def batdongssan_so_item(url):
-    time.sleep(2)
-    res = requests.get(url)    
+    # time.sleep(2)
+    res = requests.get(url, 
+                       timeout = 5)
     soup = BeautifulSoup(res.text, 'html.parser')
     item = {}
 

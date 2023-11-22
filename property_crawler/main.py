@@ -35,7 +35,7 @@ site_urls = {
     ]
 }
 
-sites_list = ['mogi' 
+sites_list = ['mogi', 'bds68', 'muaban', 'nhatot', 'batdongsan_so', 'ibatdongsan'
             ]
 def main():
     parser = argparse.ArgumentParser()
