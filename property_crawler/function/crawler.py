@@ -1,8 +1,3 @@
-from .site_crawler.nhadat24h import (
-    nhadat24h_item, nhadat24h_list)
-from .site_crawler.houseviet import (
-    houseviet_item, houseviet_list
-)
 import pytz
 from datetime import date, datetime
 from typing import List, Optional, Literal
@@ -17,19 +12,6 @@ from .site_crawler.muaban import (
     muaban_item, muaban_list)
 from .site_crawler.nhatot import (
     nhatot_item, nhatot_list)
-from .site_crawler.batdongsan_so import (
-    batdongssan_so_item, batdongssan_so_list)
-from .site_crawler.ibatdongsan import (
-    ibatdongsan_item, ibatdongsan_list)
-from .site_crawler.batdongsanonline import(
-    batdongsanonline_item,batdongsanonline_list)
-from .site_crawler.bds123 import(
-    bds123_item,bds123_list)
-from.site_crawler.w123nhadatviet import(
-    w123nhadatviet_item,w123nhadatviet_list)
-from .site_crawler.meeyland import(
-    meeyland_item, meeyland_list)
-
 
 class LocationModel(BaseModel):
     city: str
@@ -84,7 +66,7 @@ class PropertyCrawlerItem(BaseModel):
     price_currency: str = 'VND'
     price_string: str
     images: List[HttpUrl] = []  
-    thumbnail: HttpUrl = None #automatic create thumbnail
+    thumbnail: HttpUrl #automatic create thumbnail
     description: str
     property_type: str 
     # property_type: Literal['apartment', 'house', 'land', 'shop']
@@ -125,38 +107,5 @@ crawler = {
     'nhatot':{
         'list': nhatot_list,
         'item': nhatot_item,
-    },
-    'batdongsan_so':{
-        'list': batdongssan_so_list,
-        'item': batdongssan_so_item,
-    },
-    'ibatdongsan':{
-        'list': ibatdongsan_list,
-        'item': ibatdongsan_item,
-    },
-    'batdongsanonline':{
-        'list': batdongsanonline_list,
-        'item': batdongsanonline_item
-    },
-    'bds123':{
-        'list': bds123_list,
-        'item': bds123_item
-    },
-    'w123nhadatviet':{
-        'list':w123nhadatviet_list,
-        'item':w123nhadatviet_item
-    },
-    'nhadat24h':{
-        'list':nhadat24h_list,
-        'item':nhadat24h_item
-    },
-    'houseviet':{
-        'list':houseviet_list,
-        'item':houseviet_item
-    },
-    'meeyland': {
-        'list': meeyland_list,
-        'item': meeyland_item
     }
-    
 }

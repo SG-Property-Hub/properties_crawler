@@ -16,7 +16,7 @@ import random
 
 site_urls = {
     'mogi': [
-        'https://mogi.vn/mua-nha-dat?cp=6690'
+        'https://mogi.vn/mua-nha-dat'
     ],
     'bds68':[
         'https://bds68.com.vn/nha-dat-ban?pg=1'
@@ -25,36 +25,11 @@ site_urls = {
         'https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset=0'
     ],
     'nhatot':[
-        'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'   
-    ],
-    'batdongsan_so':[
-        'https://batdongsan.so/api/v1/home/demand/1/posts?page=3053'
-    ],
-    'ibatdongsan':[
-        'https://i-batdongsan.com/can-ban-nha-dat.htm'
-    ],
-    'batdongsanonline':[
-        'https://batdongsanonline.vn/mua-ban-dat/?page=1'
-    ],
-    'bds123':[
-        'https://bds123.vn/nha-dat-ban.html?page=1'
-    ],
-    'w123nhadatviet':[
-        'https://123nhadatviet.com/rao-vat/can-ban/nha-dat.html'
-    ],
-    'nhadat24h':[
-        'https://nhadat24h.net/nha-dat-ban/page1'
-    ],
-    'houseviet':[
-        'https://houseviet.vn/nha-dat-ban'
-    ],
-
-    'meeyland': [
-        'https://meeyland.com/mua-ban-nha-dat?page=1'
+        'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=1001&area_v2=100107&key_param_included=true'   
     ]
 }
 
-sites_list = ['mogi', 'bds68', 'muaban', 'nhatot', 'batdongsan_so', 'ibatdongsan', 'meeyland'
+sites_list = ['mogi' 
             ]
 def main():
     parser = argparse.ArgumentParser()
@@ -64,7 +39,7 @@ def main():
     parser.add_argument("-m", "--mode", type = str, default = "basic", help="input mode")
     # Crawl only
     parser.add_argument("-lc", "--save_local", action='store_true', default=False, help="boolean save to local parameter")
-    parser.add_argument("-rf", "--read_file", type = str, default = False, help="read from ")
+    parser.add_argument("-rf", "--read_file", action='store_true', default=False, help="boolean read_file parameter")
 
     args = parser.parse_args()
     sites = args.site
@@ -73,6 +48,9 @@ def main():
     save_local = args.save_local
     read_file = args.read_file
     
+    if read_file:
+        crawl_url_list.delay()
+        return
     # If no sites provided, update all sites
     if sites is None:
         sites = sites_list
@@ -84,15 +62,14 @@ def main():
     task_list = []
     for site in sites:
         for url in site_urls[site]:
-            print(site, url, mode, 'save to local' if save_local else 'save to mongodb', read_file)
-            task_list.append((site, url, mode, save_local, read_file))
+            print(site, url, mode, 'save to local' if save_local else 'save to mongodb')
+            task_list.append((site, url, mode, save_local))
 
     #shuffle task list
     random.shuffle(task_list)
     for task_job in task_list:
         print(task_job)
-        crawl_url_list.delay(
-            task_job[0], task_job[1], task_job[2], task_job[3], task_job[4])
+        crawl_url_list.delay(task_job[0], task_job[1], task_job[2], task_job[3])
 
 if __name__ == "__main__":
     main()
