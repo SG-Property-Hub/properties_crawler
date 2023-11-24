@@ -1,3 +1,8 @@
+from .site_crawler.nhadat24h import (
+    nhadat24h_item, nhadat24h_list)
+from .site_crawler.houseviet import (
+    houseviet_item, houseviet_list
+)
 import pytz
 from datetime import date, datetime
 from typing import List, Optional, Literal
@@ -22,11 +27,9 @@ from .site_crawler.bds123 import(
     bds123_item,bds123_list)
 from.site_crawler.w123nhadatviet import(
     w123nhadatviet_item,w123nhadatviet_list)
-from .site_crawler.nhadat24h import(
-    nhadat24h_item,nhadat24h_list)
-from .site_crawler.houseviet import(
-    houseviet_item,houseviet_list
-)
+from .site_crawler.meeyland import(
+    meeyland_item, meeyland_list)
+
 
 class LocationModel(BaseModel):
     city: str
@@ -150,5 +153,10 @@ crawler = {
     'houseviet':{
         'list':houseviet_list,
         'item':houseviet_item
+    },
+    'meeyland': {
+        'list': meeyland_list,
+        'item': meeyland_item
     }
+    
 }

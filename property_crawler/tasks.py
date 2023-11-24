@@ -60,13 +60,29 @@ def worker_shutdown(**kwargs):
     logger.info('Worker process is shutting down...')
 
 @app.task(bind=True)
-def crawl_url_list(self, site = None, url = None, mode = 'basic', crawl_only = True):
+def crawl_url_list(self, site = None, url = None, mode = 'basic', crawl_only = True, read_file = False):
     global redis_client
     logger.info(f'Crawling item URL list from {site} {url} {mode}')
     if site not in crawler:
         raise Exception('Site not found')
 
-    try:
+    try:    
+        if read_file:
+            #txt file contain urls
+            file_path = read_file
+            with open(file_path) as f:
+                urls_file = f.readlines()
+            urls_file = [x.strip() for x in urls_file][:500000]
+            print(f'Found {len(urls_file)} items')
+            urls = []
+            for item_url in urls_file:
+                # if not redis_client.sismember('celery_url_list', item_url):
+                urls.append(item_url)
+            
+            (group(crawl_item.s(site, url, crawl_only) for url in urls))()
+
+            return 'crawl from file call success with ' + str(len(urls)) + ' urls'
+
         result = crawler[site]['list'](url)
         urls = []
         for item_url in result['urls']:
@@ -75,11 +91,14 @@ def crawl_url_list(self, site = None, url = None, mode = 'basic', crawl_only = T
    
         logger.info(f'Found {len(urls)} items')
         (group(crawl_item.s(site, url, crawl_only) for url in urls))()
-        
+
         if mode == 'basic':
             if not len(urls):
                 return f"{mode} | {url}"
-            
+        
+        if mode == 'ddos':
+            return f"{mode} | {url}"
+        
         if result['next_page']:
             crawl_url_list.delay(site, result['next_page'], mode, crawl_only)
 
@@ -129,9 +148,13 @@ def crawl_item(self, site, url, save_local = False):
         else:
             chain(load_to_local.s(item),
                     )()
-        
+    
+        return item
+
     except Exception as e:
-        raise Exception('Error when crawling item' + str(e))
+        # raise Exception('Error when crawling item' + str(e))
+        logger.error('Error when crawling item' + str(e))
+        raise self.retry(countdown=120, max_retries = 0)
 
 
 @app.task

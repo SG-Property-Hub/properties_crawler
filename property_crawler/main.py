@@ -16,7 +16,7 @@ import random
 
 site_urls = {
     'mogi': [
-        'https://mogi.vn/mua-nha-dat'
+        'https://mogi.vn/mua-nha-dat?cp=6690'
     ],
     'bds68':[
         'https://bds68.com.vn/nha-dat-ban?pg=1'
@@ -28,7 +28,7 @@ site_urls = {
         'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'   
     ],
     'batdongsan_so':[
-        'https://batdongsan.so/api/v1/home/demand/1/posts?page=1'
+        'https://batdongsan.so/api/v1/home/demand/1/posts?page=3053'
     ],
     'ibatdongsan':[
         'https://i-batdongsan.com/can-ban-nha-dat.htm'
@@ -47,10 +47,14 @@ site_urls = {
     ],
     'houseviet':[
         'https://houseviet.vn/nha-dat-ban'
+    ],
+
+    'meeyland': [
+        'https://meeyland.com/mua-ban-nha-dat?page=1'
     ]
 }
 
-sites_list = ['mogi', 'bds68', 'muaban', 'nhatot', 'batdongsan_so', 'ibatdongsan'
+sites_list = ['mogi', 'bds68', 'muaban', 'nhatot', 'batdongsan_so', 'ibatdongsan', 'meeyland'
             ]
 def main():
     parser = argparse.ArgumentParser()
@@ -60,7 +64,7 @@ def main():
     parser.add_argument("-m", "--mode", type = str, default = "basic", help="input mode")
     # Crawl only
     parser.add_argument("-lc", "--save_local", action='store_true', default=False, help="boolean save to local parameter")
-    parser.add_argument("-rf", "--read_file", action='store_true', default=False, help="boolean read_file parameter")
+    parser.add_argument("-rf", "--read_file", type = str, default = False, help="read from ")
 
     args = parser.parse_args()
     sites = args.site
@@ -69,9 +73,6 @@ def main():
     save_local = args.save_local
     read_file = args.read_file
     
-    if read_file:
-        crawl_url_list.delay()
-        return
     # If no sites provided, update all sites
     if sites is None:
         sites = sites_list
@@ -83,14 +84,15 @@ def main():
     task_list = []
     for site in sites:
         for url in site_urls[site]:
-            print(site, url, mode, 'save to local' if save_local else 'save to mongodb')
-            task_list.append((site, url, mode, save_local))
+            print(site, url, mode, 'save to local' if save_local else 'save to mongodb', read_file)
+            task_list.append((site, url, mode, save_local, read_file))
 
     #shuffle task list
     random.shuffle(task_list)
     for task_job in task_list:
         print(task_job)
-        crawl_url_list.delay(task_job[0], task_job[1], task_job[2], task_job[3])
+        crawl_url_list.delay(
+            task_job[0], task_job[1], task_job[2], task_job[3], task_job[4])
 
 if __name__ == "__main__":
     main()
