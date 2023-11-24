@@ -101,11 +101,17 @@ def bds68_item(url):
     items["attr"]= {}
     try:
         if "Diện Tích" in main_info:
-            items['attr']["total_area"]=float(main_info["Diện Tích"].split(" ")[0].replace(",","."))
+            items['attr']["area"]=float(main_info["Diện Tích"].split(" ")[0].replace(",","."))
 
         if 'Diện Tích Sử Dụng' in main_info:
-            items['attr']['area'] = float(main_info["Diện Tích Sử Dụng"].split(" ")[0].replace(",","."))
-
+            value = float(main_info["Diện Tích Sử Dụng"].split(" ")[0].replace(",","."))
+            if items["attr"]["area"] > value:
+                items["attr"]["area"] = items["attr"]["total_area"]
+                items["attr"]["total_area"]= value
+            else:
+                items["attr"]["area"] = value
+        
+        
         if 'Năm xây dựng' in main_info:
             items["attr"]["built_year"]=int(main_info["Năm xây dựng"])
 
@@ -119,7 +125,10 @@ def bds68_item(url):
             items["attr"]["site_id"] = main_info["Mã Đăng Tin"]
         
         if 'Số Tầng' in main_info:
-            items["attr"]["floor"] = int(main_info["Số Tầng"])
+            if items['property_type'] == "Nhà Chung Cư":
+                items["attr"]["floor_num"] = int(main_info["Số Tầng"])
+            else:
+                items["attr"]["floor"] = int(main_info["Số Tầng"])
 
         if 'Mặt Tiền' in main_info:
             items["attr"]["width"] = float(main_info["Mặt Tiền"].split(" ")[0].replace(",","."))

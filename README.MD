@@ -34,7 +34,7 @@ celery -A property_crawler worker -l info -Q crawl_list,crawl_item,io --purge -c
 3. Run main script to start pipeline:
 
 ```bash
-python3 -m property_crawler.main
+python3 -m property_crawler.main --mode full
 ```
 
 

@@ -42,12 +42,12 @@ def convert_area_info(area_string):
     info = {}
     list_info = area_string.split(" ")
     total_area = float(list_info[0].replace(".","").replace(",","."))
-    info["total_area"] = total_area
+    info["total_area"] =info["area"]= total_area
     if len(list_info) > 2:
         wid_len = list_info[2].split("x")
         width = float(wid_len[0].replace("(","").replace(",","."))
         length= float(wid_len[1].replace(")","").replace(",","."))
-        if width > length:
+        if width > length:  
             width,length = length,width
         info["width"]=width
         info["length"]=length
@@ -112,6 +112,9 @@ def muaban_item(url):
         if 'Tổng số tầng' in main_info:
             item["attr"]["floor"] = int(main_info["Tổng số tầng"])
         
+        if 'Tầng số' in main_info:
+            item["attr"]["floor_num"]=int(main_info["Tầng số"].split("/")[0])
+        
         if 'Hướng cửa chính' in main_info:
             item["attr"]["direction"] = main_info["Hướng cửa chính"]
         
@@ -120,7 +123,7 @@ def muaban_item(url):
         
         if 'Điểm nổi bật' in main_info:
             #item["attr"]["feature"] = main_info['Điểm nổi bật'].replace("</li><li>",",").replace("</li></ul>","").replace("<ul><li>","")
-            item["attr"]["feature"] = main_info['Điểm nổi bật']
+            item["location"]["description"] = main_info['Điểm nổi bật']
             
         if 'Dự án' in main_info:
             item["project"] = {}
