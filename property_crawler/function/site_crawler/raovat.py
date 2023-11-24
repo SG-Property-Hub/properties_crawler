@@ -9,7 +9,8 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 
 def raovat_list(url = None):
-
+    with open('/home/etsu_daemon/project/property-crawler/property_crawler/function/site_crawler/input_data/raovat.json') as json_file:
+        geodata = json.load(json_file)
     crawl_url ="https://raovat.vnexpress.net/tp-ho-chi-minh/huyen-binh-chanh/mua-ban-nha-dat?page=1"
     if url:
         crawl_url=url
@@ -37,8 +38,6 @@ def raovat_list(url = None):
         next_page = "https://raovat.vnexpress.net/{}/{}/mua-ban-nha-dat?page=".format(city,dist) + str(num_cur_page + 1)
         return {'urls': urls, 'next_page': next_page}
     else:
-        with open('/home/etsu_daemon/project/property-crawler/property_crawler/function/site_crawler/input_data/homedy.json') as json_file:
-            geodata = json.load(json_file)
         city_list = [key for item in geodata for key in item.keys()]
         city_index = city_list.index(city)
         dist_list= geodata[city_index][city]
@@ -157,4 +156,4 @@ def raovat_item(url):
     except:
         pass
     
-    return items
+    return item

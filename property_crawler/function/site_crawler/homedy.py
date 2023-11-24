@@ -58,9 +58,6 @@ def homedy_list(url = None):
                     dist_list= [key for item in geodata[city_index][city] for key in item.keys()]
                 dist_index+=1
                 dist = dist_list[dist_index]
-            if dist_index == len(dist_list)-1:
-                city_index+=1
-                city = city_list[city_index]
             ward_list= geodata[city_index][city][dist_index][dist]
             ward =ward_list[ward_index+1]
             next_page = "https://homedy.com/ban-nha-dat-{}-{}-{}/p1".format(ward,dist,city) 
@@ -117,6 +114,7 @@ def homedy_item(url):
     images = soup.find_all("a",class_="image-popup fh5co-board-img")
     for image in images:
         image_list.append(image["href"])
+    item["images"]=image_list
     
     item["description"]= soup.find("div",class_="description-content").get_text().strip()
     
@@ -141,10 +139,11 @@ def homedy_item(url):
     
     item["attr"]= {}
     area = soup.find("div",class_="product-short-info").find_all("strong")[1].get_text().strip()
-    if area.find("- ") != -1:
-        area = area.split("- ")[1]
-    item["attr"]["area"] = float(area.split("\n")[0].replace(",","."))
-    item["attr"]["total_area"]=float(area.split("\n")[0].replace(",","."))
+    if area != '--':
+        if area.find("- ") != -1:
+            area = area.split("- ")[1]
+        item["attr"]["area"] = float(area.split("\n")[0].replace(",","."))
+        item["attr"]["total_area"]=float(area.split("\n")[0].replace(",","."))
     try:
         if 'Số phòng ngủ' in main_info:
             item["attr"]["bedroom"] = int(main_info["Số phòng ngủ"])

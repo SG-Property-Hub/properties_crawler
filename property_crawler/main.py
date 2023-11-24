@@ -48,7 +48,12 @@ site_urls = {
     'houseviet':[
         'https://houseviet.vn/nha-dat-ban'
     ],
-
+    'raovat':{
+        'https://raovat.vnexpress.net/tp-ho-chi-minh/huyen-binh-chanh/mua-ban-nha-dat?page=1'
+    },
+    'homedy':{
+        'https://homedy.com/ban-nha-dat-xa-an-phu-tay-huyen-binh-chanh-tp-ho-chi-minh/p1'
+    },
     'meeyland': [
         'https://meeyland.com/mua-ban-nha-dat?page=1'
     ]
