@@ -13,24 +13,37 @@ def nhatot_list(url = None):
     with open('input_data/nhatot.json') as json_file:
         json_data = json.load(json_file)
     geo,region_idx,idx_region= json_data
-    
+
     crawl_url = 'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'
     if url:
         crawl_url = url
+    # init variables with null or empty value
+    products = []
+    urls = []
+    next_page = None 
     limit = int(crawl_url.split("&limit=")[1].split("&")[0])
     o = int(crawl_url.split("&o=")[1].split("&")[0])
     region = crawl_url.split("&region_v2=")[1].split("&")[0]
     area = crawl_url.split("&area_v2=")[1].split("&")[0]
     
-    res = requests.get(crawl_url)
+    
+     # Case 0: getting 403 or 404... error. Try to get next page
+    try:   
+        res = requests.get(crawl_url,timeout=4)
+    except:
+        new_o = o + limit
+        next_page = f'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o={str(new_o)}&cg=1000&region_v2={region}&area_v2={area}&key_param_included=true'
+        return {'urls': urls, 'next_page': next_page}    
     products = res.json()
-    if (len(products["ads"])) > 0:
-        urls =[]
+    
+    if products["ads"]:
+    #2: 200 status code and products is not empty or current page is smaller than max_num_page
         for product in products["ads"]:
-            url = f'https://gateway.chotot.com/v2/public/ad-listing/{product["list_id"]}?adview_position=true&tm=treatment2'
-            urls.append(url)
-        limit = int(crawl_url.split("&limit=")[1].split("&")[0])
-        o = int(crawl_url.split("&o=")[1].split("&")[0])
+            try:
+                url = f'https://gateway.chotot.com/v2/public/ad-listing/{product["list_id"]}?adview_position=true&tm=treatment2'
+                urls.append(url)
+            except:
+                pass
         new_o = o + limit
         next_page = f'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o={str(new_o)}&cg=1000&region_v2={region}&area_v2={area}&key_param_included=true'
         return {'urls': urls, 'next_page': next_page}
@@ -53,7 +66,7 @@ def nhatot_list(url = None):
             raise Exception('Crawling Finished')
         
 def nhatot_item(url):
-    time.sleep(1)
+    
     res = requests.get(url)
     data = res.json()
     item ={}

@@ -9,15 +9,32 @@ from bs4 import BeautifulSoup
 import time
 
 def nhadat24h_list(url = None):
+    max_num_page = 10000
     crawl_url ="https://nhadat24h.net/nha-dat-ban/page1"
     if url:
         crawl_url = url
-    res = requests.get(crawl_url)
+        
+    # init variables with null or empty value
+    products = []
+    urls = []
+    num_cur_page = int(crawl_url.split("/page")[1])
+    next_page = None  
+
+    # Case 0: getting 403 or 404... error. Try to get next page
+    try:   
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
+        next_page = "https://nhadat24h.net/nha-dat-ban/page" + str(num_cur_page + 1)
+        return {'urls': urls, 'next_page': next_page}
+    
     soup = BeautifulSoup(res.text, 'html.parser')
     list_product = soup.find("div",id="ContentPlaceHolder2_KetQuaTimKiem1_Pn1")
 
-    if list_product != None:
-        urls = []
+    # Case 1: products is not empty and current page is bigger than max_num_page
+    if not list_product and num_cur_page > max_num_page:
+        raise Exception('Crawling Finished')
+    elif list_product: 
         products = list_product.find_all("a",class_="a-title")
         for product in products:
             try:
@@ -25,11 +42,9 @@ def nhadat24h_list(url = None):
                 urls.append(url)
             except:
                 pass
-        num_cur_page = int(crawl_url.split("/page")[1])
-        next_page = "https://nhadat24h.net/nha-dat-ban/page" + str(num_cur_page + 1)
-        return {'urls': urls, 'next_page': next_page}
-    else:
-            raise Exception('Crawling Finished')
+    next_page = "https://nhadat24h.net/nha-dat-ban/page" + str(num_cur_page + 1)
+    return {'urls': urls, 'next_page': next_page}
+
       
 def convert_price(price):
     sum_price = 0

@@ -10,29 +10,44 @@ import time
 
 
 def w123nhadatviet_list(url = None):
+    max_num_page = 11639
     crawl_url = 'https://123nhadatviet.com/rao-vat/can-ban/nha-dat.html'
     if url:
         crawl_url = url
-    res = requests.get(crawl_url)
+        
+    # init variables with null or empty value
+    products = []
+    urls = []
+    try:
+        num_cur_page = int(crawl_url.split("--")[1].split(".")[0])
+    except:
+        num_cur_page = 1
+    next_page = None
+    
+    # Case 0: getting 403 or 404... error. Try to get next page
+    try:   
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
+        next_page = "https://i-batdongsan.com/can-ban-nha-dat/p" + str(num_cur_page + 1)+".htm"
+        return {'urls': urls, 'next_page': next_page}
+    
     soup = BeautifulSoup(res.text, 'html.parser')
     products = soup.find_all("div",class_="thumbnail")
     
-    if len(products) != 0:
-        urls = []
+    if not products and num_cur_page > max_num_page:
+        raise Exception('Crawling Finished')
+    
+    elif products:
         for product in products:
             try:
                 url = "https://123nhadatviet.com"+ product.find("a")["href"]
                 urls.append(url)
             except:
                 pass
-        try:
-            num_cur_page = int(crawl_url.split("--")[1].split(".")[0])
-            next_page = "https://123nhadatviet.com/rao-vat/can-ban/nha-dat/trang--" + str(num_cur_page + 1)+".html"
-        except:
-            next_page = "https://123nhadatviet.com/rao-vat/can-ban/nha-dat/trang--2.html"
-        return {'urls': urls, 'next_page': next_page}
-    else:
-         raise Exception('Crawling Finished')
+    next_page = "https://123nhadatviet.com/rao-vat/can-ban/nha-dat/trang--" + str(num_cur_page + 1)+".html"
+    return {'urls': urls, 'next_page': next_page}
+
 
 def convert_price(price):
     list_price = price.split(" ")

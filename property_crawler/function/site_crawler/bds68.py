@@ -8,27 +8,42 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
 def bds68_list(url = None):
+    max_num_page = 6706
     crawl_url = 'https://bds68.com.vn/nha-dat-ban?pg=1'
     if url:
         crawl_url = url
-    res = requests.get(crawl_url)
+        
+    # init variables with null or empty value
+    products = []
+    urls = []
+    num_cur_page = int(crawl_url.split("=")[1])
+    next_page = None  
+
+    # Case 0: getting 403 or 404... error. Try to get next page
+    try:   
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
+        next_page = "https://bds68.com.vn/nha-dat-ban?pg=" + str(num_cur_page + 1)
+        return {'urls': urls, 'next_page': next_page}
+    
     soup = BeautifulSoup(res.text, 'html.parser')
     products = soup.select(".info-line.header-prop-title h4 a[href]")
     
-    if len(products) != 0:
-        urls = []
+    # Case 1: products is not empty and current page is bigger than max_num_page
+    if not products and num_cur_page > max_num_page:
+        raise Exception('Crawling Finished')
+    elif products:   
+    #2: 200 status code and products is not empty or current page is smaller than max_num_page    
         for product in products:
             try:
                 url = "https://bds68.com.vn"+ product["href"]
                 urls.append(url)
             except:
                 pass
-        num_cur_page = int(crawl_url.split("=")[1])
-        next_page = "https://bds68.com.vn/nha-dat-ban?pg=" + str(num_cur_page + 1)
-        return {'urls': urls, 'next_page': next_page}
-    else:
-         raise Exception('Crawling Finished')
-        
+    next_page = "https://bds68.com.vn/nha-dat-ban?pg=" + str(num_cur_page + 1)
+    return {'urls': urls, 'next_page': next_page}
+
 def convert_price(price):
     list_price = price.split(" ")
     sum_price = 0
@@ -53,7 +68,7 @@ def convert_main_info(main_info_string):
     return main_info
 
 def bds68_item(url):
-    time.sleep(2)
+    
     res = requests.get(url)    
     soup = BeautifulSoup(res.text, 'html.parser')
     items = {}

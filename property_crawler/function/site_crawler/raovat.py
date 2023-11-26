@@ -9,11 +9,17 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 
 def raovat_list(url = None):
-    with open('/home/etsu_daemon/project/property-crawler/property_crawler/function/site_crawler/input_data/raovat.json') as json_file:
+    with open('input_data/raovat.json') as json_file:
         geodata = json.load(json_file)
     crawl_url ="https://raovat.vnexpress.net/tp-ho-chi-minh/huyen-binh-chanh/mua-ban-nha-dat?page=1"
     if url:
         crawl_url=url
+    
+    # init variables with null or empty value
+    products = []
+    urls = []
+    num_cur_page = int(crawl_url.split("page=")[1])
+    next_page = None 
         
     region = crawl_url.split(".net/")[1].split("/")
     city = region[0]
@@ -24,32 +30,40 @@ def raovat_list(url = None):
     dist_list= geodata[city_index][city]
     dist_index= dist_list.index(dist)
     
-    res = requests.get(crawl_url)
+    # Case 0: getting 403 or 404... error. Try to get next page       
+    try:   
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
+        next_page = "https://raovat.vnexpress.net/{}/{}/mua-ban-nha-dat?page=".format(city,dist) + str(num_cur_page + 1)
+        return {'urls': urls, 'next_page': next_page}
+    
     soup = BeautifulSoup(res.text,"html.parser")
     products =soup.find("div",class_="list-item-post").find_all("div",class_="item-post")
 
-    if len(products) >0:
-        urls=[]
+    if products:
         for product in products:
             url = 'https://raovat.vnexpress.net'+ product.find("a")["href"]
             urls.append(url)
-    
-        num_cur_page = int(crawl_url.split("page=")[1])
+
         next_page = "https://raovat.vnexpress.net/{}/{}/mua-ban-nha-dat?page=".format(city,dist) + str(num_cur_page + 1)
         return {'urls': urls, 'next_page': next_page}
     else:
-        city_list = [key for item in geodata for key in item.keys()]
-        city_index = city_list.index(city)
-        dist_list= geodata[city_index][city]
-        dist_index= dist_list.index(dist)
-        if dist_index == len(dist_list)-1:
-            dist_index = -1
-            city_index+=1
-            city = city_list[city_index]
-        dist_list= geodata[city_index][city]
-        dist =dist_list[dist_index+1]
-        next_page = "https://raovat.vnexpress.net/{}/{}/mua-ban-nha-dat?page=1".format(city,dist)
-        return {'urls': [], 'next_page': next_page}
+        try:
+            city_list = [key for item in geodata for key in item.keys()]
+            city_index = city_list.index(city)
+            dist_list= geodata[city_index][city]
+            dist_index= dist_list.index(dist)
+            if dist_index == len(dist_list)-1:
+                dist_index = -1
+                city_index+=1
+                city = city_list[city_index]
+            dist_list= geodata[city_index][city]
+            dist =dist_list[dist_index+1]
+            next_page = "https://raovat.vnexpress.net/{}/{}/mua-ban-nha-dat?page=1".format(city,dist)
+            return {'urls': [], 'next_page': next_page}
+        except:
+            raise Exception('Crawling Finished')
 
 def convert_price(price):
     list_price = price.split(" ")
