@@ -3,7 +3,7 @@ services:
   celery-worker:
     build:
       context: .
-    command: celery -A property_crawler worker -Q crawl_list,crawl_item,io --purge -c 12
+    command: celery -A property_crawler worker -Q crawl_list,crawl_item,io --purge -c 100
     environment:
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}

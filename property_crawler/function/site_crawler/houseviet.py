@@ -7,30 +7,46 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
+from .utils.config import *
 
 def houseviet_list(url = None):
+    max_num_page = 8030
     crawl_url = 'https://houseviet.vn/nha-dat-ban'
     if url:
         crawl_url = url
-    res = requests.get(crawl_url)
+    
+    # init variables with null or empty value    
+    products = []
+    urls = []
+    try:
+        num_cur_page = int(crawl_url.split("/p")[1].split(".")[0])
+    except:
+        num_cur_page = 1
+    next_page = None 
+    
+    # Case 0: getting 403 or 404... error. Try to get next page
+    try:   
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
+        next_page = "https://houseviet.vn/nha-dat-ban/p" + str(num_cur_page + 1)
+        return {'urls': urls, 'next_page': next_page}
+
     soup = BeautifulSoup(res.text, 'html.parser')
     products =soup.find_all("section",class_="property-item")
     
-    if len(products) != 0:
-        urls = []
+    # Case 1: products is not empty and current page is bigger than max_num_page
+    if not products and num_cur_page > max_num_page:
+        raise Exception('Crawling Finished')
+    elif products:
+    #2: 200 status code and products is not empty or current page is smaller than max_num_page
         for product in products:
             try: 
                 urls.append(product.find("a")["href"])
             except:
                 pass
-        try:
-            num_cur_page = int(crawl_url.split("/p")[1].split(".")[0])
-            next_page = "https://houseviet.vn/nha-dat-ban/p" + str(num_cur_page + 1)
-        except:
-            next_page = "https://houseviet.vn/nha-dat-ban/p2"
-        return {'urls': urls, 'next_page': next_page}
-    else:
-         raise Exception('Crawling Finished')
+    next_page = "https://houseviet.vn/nha-dat-ban/p" + str(num_cur_page + 1)
+    return {'urls': urls, 'next_page': next_page}
 
 def convert_address_info(address):
      #full string_format : "10 ngõ 55, Đường Lê Quý Đôn, Phường Bạch Đằng, Quận Hai Bà Trưng, Hà Nội"
@@ -90,7 +106,8 @@ def convert_main_info(soup):
 
 def houseviet_item(url):
 
-    res = requests.get(url)    
+    res = requests.get(url,
+                       proxies = PROXY)    
     soup = BeautifulSoup(res.text, 'html.parser')
     item = {}
     

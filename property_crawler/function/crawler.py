@@ -27,6 +27,10 @@ from .site_crawler.bds123 import(
     bds123_item,bds123_list)
 from.site_crawler.w123nhadatviet import(
     w123nhadatviet_item,w123nhadatviet_list)
+from .site_crawler.homedy import(
+    homedy_item,homedy_list)
+from .site_crawler.raovat import(
+    raovat_item,raovat_list)
 from .site_crawler.meeyland import(
     meeyland_item, meeyland_list)
 
@@ -153,6 +157,14 @@ crawler = {
     'houseviet':{
         'list':houseviet_list,
         'item':houseviet_item
+    },
+    'homedy':{
+        'list':homedy_list,
+        'item':homedy_item
+    },
+    'raovat':{
+        'list':raovat_list ,
+        'item':raovat_item
     },
     'meeyland': {
         'list': meeyland_list,

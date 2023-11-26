@@ -51,7 +51,8 @@ def mogi_list(url = None):
 def mogi_item(url):
 
     item = {}
-    res = requests.get(url)
+    res = requests.get(url,
+                       proxies = PROXY)
     soup = BeautifulSoup.BeautifulSoup(res.text, 'html.parser')
 
     item = {}

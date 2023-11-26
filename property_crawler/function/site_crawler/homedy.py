@@ -7,15 +7,22 @@ import time
 # from property_crawler.items import PropertyCrawlerItem
 from decimal import Decimal
 from bs4 import BeautifulSoup
+from .utils.config import *
 
 def homedy_list(url = None):
-    with open('/home/etsu_daemon/project/property-crawler/property_crawler/function/site_crawler/input_data/homedy.json') as json_file:
+    with open('input_data/homedy.json') as json_file:
         geodata = json.load(json_file)
     
     crawl_url ="https://homedy.com/ban-nha-dat-xa-an-phu-tay-huyen-binh-chanh-tp-ho-chi-minh/p1"
     if url:
         crawl_url=url
         
+    # init variables with null or empty value
+    products = []
+    urls = []
+    num_cur_page = int(crawl_url.split("/p")[1])
+    next_page = None  
+
     #get city,dist,ward form crawl-url
     city_list = [key for item in geodata for key in item.keys()]
     for i in city_list:
@@ -32,8 +39,15 @@ def homedy_list(url = None):
         if i in crawl_url:
             ward= i
             ward_index = ward_list.index(ward)
+            
+    # Case 0: getting 403 or 404... error. Try to get next page       
+    try:   
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
+        next_page = "https://homedy.com/ban-nha-dat-{}-{}-{}/p".format(ward,dist,city) + str(num_cur_page + 1)
+        return {'urls': urls, 'next_page': next_page}
     
-    res = requests.get(crawl_url)
     soup = BeautifulSoup(res.text,"html.parser")
     if soup.find("div",class_="no-result") == None:
         products = soup.find("div",class_="tab-content").find_all("h3")
@@ -44,7 +58,6 @@ def homedy_list(url = None):
                 urls.append(url)
             except:
                 pass
-        num_cur_page = int(crawl_url.split("/p")[1])
         next_page = "https://homedy.com/ban-nha-dat-{}-{}-{}/p".format(ward,dist,city) + str(num_cur_page + 1)
         return {'urls': urls, 'next_page': next_page}
     else:
@@ -58,9 +71,6 @@ def homedy_list(url = None):
                     dist_list= [key for item in geodata[city_index][city] for key in item.keys()]
                 dist_index+=1
                 dist = dist_list[dist_index]
-            if dist_index == len(dist_list)-1:
-                city_index+=1
-                city = city_list[city_index]
             ward_list= geodata[city_index][city][dist_index][dist]
             ward =ward_list[ward_index+1]
             next_page = "https://homedy.com/ban-nha-dat-{}-{}-{}/p1".format(ward,dist,city) 
@@ -92,7 +102,8 @@ def convert_address_info(address):
        
 def homedy_item(url):
     
-    res = requests.get(url)
+    res = requests.get(url,
+                       proxies = PROXY)
     soup = BeautifulSoup(res.text, 'html.parser')
     item ={}
     
@@ -117,6 +128,7 @@ def homedy_item(url):
     images = soup.find_all("a",class_="image-popup fh5co-board-img")
     for image in images:
         image_list.append(image["href"])
+    item["images"]=image_list
     
     item["description"]= soup.find("div",class_="description-content").get_text().strip()
     
@@ -141,10 +153,11 @@ def homedy_item(url):
     
     item["attr"]= {}
     area = soup.find("div",class_="product-short-info").find_all("strong")[1].get_text().strip()
-    if area.find("- ") != -1:
-        area = area.split("- ")[1]
-    item["attr"]["area"] = float(area.split("\n")[0].replace(",","."))
-    item["attr"]["total_area"]=float(area.split("\n")[0].replace(",","."))
+    if area != '--':
+        if area.find("- ") != -1:
+            area = area.split("- ")[1]
+        item["attr"]["area"] = float(area.split("\n")[0].replace(",","."))
+        item["attr"]["total_area"]=float(area.split("\n")[0].replace(",","."))
     try:
         if 'Số phòng ngủ' in main_info:
             item["attr"]["bedroom"] = int(main_info["Số phòng ngủ"])

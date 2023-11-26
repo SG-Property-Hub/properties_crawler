@@ -8,18 +8,32 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
 import re
+from .utils.config import *
 
 def batdongsanonline_list(url = None):
+    max_num_page = 100000
     crawl_url = 'https://batdongsanonline.vn/mua-ban-dat/?page=1'
     if url:
         crawl_url = url
-    res = requests.get(url)
-    soup = BeautifulSoup(res.text, 'html.parser')
-    products = soup.find_all("div",class_="info_td_bds w7")
+    # init variables with null or empty value
+    products = []
+    urls = []
+    num_cur_page = int(crawl_url.split("=")[1])
+    next_page = None  
     types = ["mua-ban-dat","mua-ban-nha","mua-ban-biet-thu","ban-can-ho-chung-cu"]
     type = crawl_url.split("vn/")[1].split("/?")[0]
-    if len(products) != 0:
-        urls = []
+    # Case 0: getting 403 or 404... error. Try to get next page
+    try:   
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
+        next_page = "https://bds68.com.vn/nha-dat-ban?pg=" + str(num_cur_page + 1)
+        return {'urls': urls, 'next_page': next_page}
+
+    soup = BeautifulSoup(res.text, 'html.parser')
+    products = soup.find_all("div",class_="info_td_bds w7")
+
+    if products:
         for product in products:
             try:
                 url = "https://batdongsanonline.vn/"+ product.find("a")["href"]
@@ -67,8 +81,9 @@ def convert_main_info(main_info_doc):
 
 
 def batdongsanonline_item(url):
-    time.sleep(2)
-    res = requests.get(url)
+    
+    res = requests.get(url,
+                       proxies = PROXY)
     soup = BeautifulSoup(res.text, 'html.parser')
     item ={}
     

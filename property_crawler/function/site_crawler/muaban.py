@@ -7,24 +7,45 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
+from .utils.config import *
 
 def muaban_list(url = None):
+    max_offset= 102860
+    
     crawl_url = "https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset=0"
     if url:
         crawl_url=url
-    res = requests.get(crawl_url)
-    products = res.json()
-    if len(products["items"])  > 0 :
-        urls = []
-        for product in products["items"]:
-            url = "https://muaban.net/listing/v1/classifieds/{}/detail".format(product["id"])
-            urls.append(url)
-        num_offset = int(crawl_url.split("offset=")[1])
+        
+    # init variables with null or empty value
+    products = []
+    urls = []
+    num_offset = int(crawl_url.split("offset=")[1])
+    next_page = None
+    
+    # Case 0: getting 403 or 404... error. Try to get next page
+    try:
+        res = requests.get(crawl_url,
+                           timeout=4)
+    except:
         next_page = "https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset="+str(num_offset +20)
-        return {'urls': urls, 'next_page': next_page}
-    else:
+        return {'urls': urls, 'next_page': next_page}        
+    
+    products = res.json()
+    
+    # Case 1: products is not empty and current page is bigger than max_num_page
+    if not products["items"] and num_offset > max_offset:
         raise Exception('Crawling Finished')
-  
+    elif products["items"]:
+    #2: 200 status code and products is not empty or current page is smaller than max_num_page
+        for product in products["items"]:
+            try:
+                url = "https://muaban.net/listing/v1/classifieds/{}/detail".format(product["id"])
+                urls.append(url)
+            except:
+                pass
+    next_page = "https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset="+str(num_offset +20)
+    return {'urls': urls, 'next_page': next_page}
+
 def convert_address_info(address):
      #full string_format : "10 ngõ 55, Đường Lê Quý Đôn, Phường Bạch Đằng, Quận Hai Bà Trưng, Hà Nội"
      # convert to address,city,dist,ward,street
@@ -54,7 +75,8 @@ def convert_area_info(area_string):
     return info
     
 def muaban_item(url):
-    res = requests.get(url)
+    res = requests.get(url,
+                       proxies = PROXY)
     data = res.json()
     item ={}
     
