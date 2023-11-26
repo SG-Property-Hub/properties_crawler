@@ -7,6 +7,7 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
+from .utils.config import *
 
 def houseviet_list(url = None):
     max_num_page = 8030
@@ -105,7 +106,8 @@ def convert_main_info(soup):
 
 def houseviet_item(url):
 
-    res = requests.get(url)    
+    res = requests.get(url,
+                       proxies = PROXY)    
     soup = BeautifulSoup(res.text, 'html.parser')
     item = {}
     

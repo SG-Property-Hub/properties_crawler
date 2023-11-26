@@ -7,6 +7,8 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
+from .utils.config import *
+
 def bds68_list(url = None):
     max_num_page = 6706
     crawl_url = 'https://bds68.com.vn/nha-dat-ban?pg=1'
@@ -69,7 +71,8 @@ def convert_main_info(main_info_string):
 
 def bds68_item(url):
     
-    res = requests.get(url)    
+    res = requests.get(url,
+                       proxies = PROXY)    
     soup = BeautifulSoup(res.text, 'html.parser')
     items = {}
 

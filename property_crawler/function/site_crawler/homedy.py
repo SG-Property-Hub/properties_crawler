@@ -7,6 +7,7 @@ import time
 # from property_crawler.items import PropertyCrawlerItem
 from decimal import Decimal
 from bs4 import BeautifulSoup
+from .utils.config import *
 
 def homedy_list(url = None):
     with open('input_data/homedy.json') as json_file:
@@ -57,7 +58,6 @@ def homedy_list(url = None):
                 urls.append(url)
             except:
                 pass
-        num_cur_page = int(crawl_url.split("/p")[1])
         next_page = "https://homedy.com/ban-nha-dat-{}-{}-{}/p".format(ward,dist,city) + str(num_cur_page + 1)
         return {'urls': urls, 'next_page': next_page}
     else:
@@ -102,7 +102,8 @@ def convert_address_info(address):
        
 def homedy_item(url):
     
-    res = requests.get(url)
+    res = requests.get(url,
+                       proxies = PROXY)
     soup = BeautifulSoup(res.text, 'html.parser')
     item ={}
     

@@ -7,7 +7,7 @@ import time
 # from property_crawler.items import PropertyCrawlerItem
 from decimal import Decimal
 from bs4 import BeautifulSoup
-
+from .utils.config import *
 
 def nhatot_list(url = None):
     with open('input_data/nhatot.json') as json_file:
@@ -67,7 +67,8 @@ def nhatot_list(url = None):
         
 def nhatot_item(url):
     
-    res = requests.get(url)
+    res = requests.get(url,
+                       proxies = PROXY)
     data = res.json()
     item ={}
     

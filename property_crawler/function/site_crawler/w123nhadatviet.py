@@ -7,6 +7,7 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
+from .utils.config import *
 
 
 def w123nhadatviet_list(url = None):
@@ -90,8 +91,9 @@ def convert_address_info(address):
     return info
 
 def w123nhadatviet_item(url):
-    time.sleep(2)
-    res = requests.get(url)    
+    
+    res = requests.get(url,
+                       proxies = PROXY)    
     soup = BeautifulSoup(res.text, 'html.parser')
     item = {}
     

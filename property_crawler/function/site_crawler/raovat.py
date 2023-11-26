@@ -7,6 +7,7 @@ import time
 # from property_crawler.items import PropertyCrawlerItem
 from decimal import Decimal
 from bs4 import BeautifulSoup
+from .utils.config import *
 
 def raovat_list(url = None):
     with open('input_data/raovat.json') as json_file:
@@ -92,7 +93,8 @@ def convert_address_info(address):
 
 def raovat_item(url):
     
-    res = requests.get(url)
+    res = requests.get(url,
+                       proxies = PROXY)
     soup = BeautifulSoup(res.text, 'html.parser')
     item ={}
     

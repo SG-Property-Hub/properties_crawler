@@ -7,9 +7,10 @@ import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
+from .utils.config import *
 
 def nhadat24h_list(url = None):
-    max_num_page = 10000
+    max_num_page = 6129
     crawl_url ="https://nhadat24h.net/nha-dat-ban/page1"
     if url:
         crawl_url = url
@@ -68,7 +69,8 @@ def convert_address_info(address):
 
 def nhadat24h_item(url):
 
-    res = requests.get(url)    
+    res = requests.get(url,
+                       proxies = PROXY)    
     soup = BeautifulSoup(res.text, 'html.parser')
     item = {}
     

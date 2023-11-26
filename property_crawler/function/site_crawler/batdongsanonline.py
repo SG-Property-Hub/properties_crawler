@@ -8,6 +8,7 @@ from decimal import Decimal
 from bs4 import BeautifulSoup
 import time
 import re
+from .utils.config import *
 
 def batdongsanonline_list(url = None):
     max_num_page = 100000
@@ -80,8 +81,9 @@ def convert_main_info(main_info_doc):
 
 
 def batdongsanonline_item(url):
-    time.sleep(2)
-    res = requests.get(url)
+    
+    res = requests.get(url,
+                       proxies = PROXY)
     soup = BeautifulSoup(res.text, 'html.parser')
     item ={}
     
