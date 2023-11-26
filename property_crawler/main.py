@@ -59,8 +59,8 @@ site_urls = {
     ]
 }
 
-sites_list = ['mogi', 'bds68', 'muaban', 'nhatot', 'batdongsan_so', 'ibatdongsan', 'meeyland'
-            ]
+sites_list = ['mogi', 'bds68', 'muaban', 'nhatot', 'batdongsan_so', 'ibatdongsan','batdongsanonline','bds123',
+             'w123nhadatviet','nhadat24h','houseviet','raovat','homedy', 'meeyland']
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--site", nargs='+', help="input site")
