@@ -81,7 +81,8 @@ def muaban_item(url):
     
     id = int(url.split("id")[1])
     api_url =f"https://muaban.net/listing/v1/classifieds/{id}/detail"
-    res = requests.get(api_url)
+    res = requests.get(api_url,
+                       proxies = PROXY)
     data = res.json()
     item ={}
     
