@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from .utils.config import *
 
 def homedy_list(url = None):
-    with open('input_data/homedy.json') as json_file:
+    with open('property_crawler/function/site_crawler/input_data/homedy.json') as json_file:
         geodata = json.load(json_file)
     
     crawl_url ="https://homedy.com/ban-nha-dat-xa-an-phu-tay-huyen-binh-chanh-tp-ho-chi-minh/p1"
@@ -148,7 +148,7 @@ def homedy_item(url):
     
     item["publish_at"] = datetime.strptime(date, "%d/%m/%Y").strftime("%Y-%m-%d %H:%M:%S")
     
-    address = soup.find("div",class_="address").get_text().split("-")[1].strip()
+    address = soup.find("div",class_="address").get_text().rsplit("-",1)[1].strip()
     item["location"] = convert_address_info(address)
     
     item["attr"]= {}

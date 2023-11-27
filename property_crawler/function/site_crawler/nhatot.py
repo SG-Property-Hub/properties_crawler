@@ -8,10 +8,14 @@ import time
 from decimal import Decimal
 from bs4 import BeautifulSoup
 from .utils.config import *
+import os
 
 def nhatot_list(url = None):
-    with open('input_data/nhatot.json') as json_file:
-        json_data = json.load(json_file)
+    try:
+        with open('property_crawler/function/site_crawler/input_data/nhatot.json') as json_file:
+            json_data = json.load(json_file)
+    except:
+        raise Exception(os.getcwd())
     geo,region_idx,idx_region= json_data
 
     crawl_url = 'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'
