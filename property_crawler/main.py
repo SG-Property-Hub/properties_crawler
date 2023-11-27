@@ -24,9 +24,9 @@ site_urls = {
     'muaban':[
         'https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset=0'
     ],
-    'nhatot':[
-        'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'   
-    ],
+    # 'nhatot':[
+    #     'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'   
+    # ],
     'batdongsan_so':[
         'https://batdongsan.so/api/v1/home/demand/1/posts?page=1'
     ],
@@ -59,7 +59,7 @@ site_urls = {
     ]
 }
 
-sites_list = ['mogi', 'bds68', 'muaban', 'nhatot', 'batdongsan_so', 'ibatdongsan','batdongsanonline','bds123',
+sites_list = ['mogi', 'bds68', 'muaban', 'batdongsan_so', 'ibatdongsan','batdongsanonline','bds123',
              'w123nhadatviet','nhadat24h','houseviet','raovat','homedy', 'meeyland']
 def main():
     parser = argparse.ArgumentParser()
