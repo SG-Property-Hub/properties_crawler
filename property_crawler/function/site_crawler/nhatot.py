@@ -11,11 +11,8 @@ from .utils.config import *
 import os
 
 def nhatot_list(url = None):
-    try:
-        with open('property_crawler/function/site_crawler/input_data/nhatot.json') as json_file:
-            json_data = json.load(json_file)
-    except:
-        raise Exception(os.getcwd())
+    with open('property_crawler/function/site_crawler/input_data/nhatot.json') as json_file:
+        json_data = json.load(json_file)
     geo,region_idx,idx_region= json_data
 
     crawl_url = 'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'
@@ -44,7 +41,7 @@ def nhatot_list(url = None):
     #2: 200 status code and products is not empty or current page is smaller than max_num_page
         for product in products["ads"]:
             try:
-                url = f'https://gateway.chotot.com/v2/public/ad-listing/{product["list_id"]}?adview_position=true&tm=treatment2'
+                url = f'https://www.nhatot.com/{product["list_id"]}.htm#px=SR-stickyad-[PO-1][PL-top]'
                 urls.append(url)
             except:
                 pass
