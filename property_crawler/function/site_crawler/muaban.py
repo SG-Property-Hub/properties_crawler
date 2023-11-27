@@ -40,10 +40,7 @@ def muaban_list(url = None):
         for product in products["items"]:
             try:
                 url = "https://muaban.net/"+product["url"]
-                res = requests.get(url)
-                print(res.url)
                 urls.append(url)
-                break
             except:
                 pass
     next_page = "https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset="+str(num_offset +20)
