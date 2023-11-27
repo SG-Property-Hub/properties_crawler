@@ -39,8 +39,11 @@ def muaban_list(url = None):
     #2: 200 status code and products is not empty or current page is smaller than max_num_page
         for product in products["items"]:
             try:
-                url = "https://muaban.net/listing/v1/classifieds/{}/detail".format(product["id"])
+                url = "https://muaban.net/"+product["url"]
+                res = requests.get(url)
+                print(res.url)
                 urls.append(url)
+                break
             except:
                 pass
     next_page = "https://muaban.net/listing/v1/classifieds/listing?subcategory_id=169&category_id=33&limit=20&offset="+str(num_offset +20)
@@ -75,8 +78,10 @@ def convert_area_info(area_string):
     return info
     
 def muaban_item(url):
-    res = requests.get(url,
-                       proxies = PROXY)
+    
+    id = int(url.split("id")[1])
+    api_url =f"https://muaban.net/listing/v1/classifieds/{id}/detail"
+    res = requests.get(api_url)
     data = res.json()
     item ={}
     
