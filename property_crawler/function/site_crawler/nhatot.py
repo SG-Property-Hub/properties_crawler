@@ -100,7 +100,10 @@ def nhatot_item(url):
     
     attr_data = {}
     for info in data["parameters"]:
-        attr_data[info["label"]] = info["value"]
+        try:
+            attr_data[info["label"]] = info["value"]
+        except:
+            continue
     
     item["location"] = {}
     item["location"]["city"] = data["ad"]["region_name"]

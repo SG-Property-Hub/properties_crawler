@@ -27,7 +27,7 @@ def batdongsanonline_list(url = None):
         res = requests.get(crawl_url,
                            timeout=4)
     except:
-        next_page = "https://bds68.com.vn/nha-dat-ban?pg=" + str(num_cur_page + 1)
+        next_page = "https://bds68.com.vn/nha-dat-ban?page=" + str(num_cur_page + 1)
         return {'urls': urls, 'next_page': next_page}
 
     soup = BeautifulSoup(res.text, 'html.parser')
@@ -40,7 +40,6 @@ def batdongsanonline_list(url = None):
                 urls.append(url)
             except:
                 pass
-        num_cur_page = int(crawl_url.split("=")[1])
         next_page = "https://batdongsanonline.vn/{}/?page=".format(type) + str(num_cur_page + 1)
         return {'urls': urls, 'next_page': next_page}
     else:
