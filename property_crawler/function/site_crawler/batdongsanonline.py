@@ -11,7 +11,7 @@ import re
 from .utils.config import *
 
 def batdongsanonline_list(url = None):
-    max_num_page = 100000
+    max_num_page = 3392
     crawl_url = 'https://batdongsanonline.vn/mua-ban-dat/?page=1'
     if url:
         crawl_url = url

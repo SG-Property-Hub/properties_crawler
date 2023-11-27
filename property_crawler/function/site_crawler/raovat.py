@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from .utils.config import *
 
 def raovat_list(url = None):
-    with open('input_data/raovat.json') as json_file:
+    with open('property_crawler/function/site_crawler/input_data/raovat.json') as json_file:
         geodata = json.load(json_file)
     crawl_url ="https://raovat.vnexpress.net/tp-ho-chi-minh/huyen-binh-chanh/mua-ban-nha-dat?page=1"
     if url:

@@ -8,10 +8,14 @@ import time
 from decimal import Decimal
 from bs4 import BeautifulSoup
 from .utils.config import *
+import os
 
 def nhatot_list(url = None):
-    with open('input_data/nhatot.json') as json_file:
-        json_data = json.load(json_file)
+    try:
+        with open('property_crawler/function/site_crawler/input_data/nhatot.json') as json_file:
+            json_data = json.load(json_file)
+    except:
+        raise Exception(os.getcwd())
     geo,region_idx,idx_region= json_data
 
     crawl_url = 'https://gateway.chotot.com/v1/public/ad-listing?st=s,k&limit=100&o=0&cg=1000&region_v2=13000&area_v2=13119&key_param_included=true'
@@ -67,7 +71,10 @@ def nhatot_list(url = None):
         
 def nhatot_item(url):
     
-    res = requests.get(url,
+    id = url.split(".com/")[1].split(".")[0]
+
+    api_url = f"https://gateway.chotot.com/v2/public/ad-listing/{id}?adview_position=true&tm=treatment2"
+    res = requests.get(api_url,
                        proxies = PROXY)
     data = res.json()
     item ={}
@@ -94,34 +101,45 @@ def nhatot_item(url):
     time_value = data["ad"]["list_time"] #/1000 to convert ms to s
     item["publish_at"] = datetime.fromtimestamp(time_value/1000).strftime("%Y-%m-%d %H:%M:%S")
     
+    attr_data = {}
+    for info in data["parameters"]:
+        attr_data[info["label"]] = info["value"]
+    
     item["location"] = {}
     item["location"]["city"] = data["ad"]["region_name"]
     
     item["location"]["dist"] = data["ad"]["area_name"]
     try:
-        item["location"]["address"]= data["ad"]["detail_address"]
-        
+        item["location"]["address"]= attr_data["Địa chỉ"]
+    except:
+        pass
+    try:
         item["location"]["ward"]= data["ad"]["ward_name"]
-        
+    except:
+        pass
+    try:
         item["location"]["street"]= data["ad"]["street_name"]
-        
+    except:
+        pass
+    try:
         item["location"]["long"]= data["ad"]["longitude"]
-         
+    except:
+        pass
+    try:    
         item["location"]["lat"]= data["ad"]["latitude"]
-    except Exception as e:
-        print('Error when parse location', e)
-        pass    
+    except:
+        pass  
     
     item["attr"]={}
     item["attr"]['site_id'] = str(data["ad"]["list_id"])
+    
     try:
-        attr_data = {}
-        for info in data["parameters"]:
-            attr_data[info["label"]] = info["value"]
-        
         if 'Diện tích' in attr_data:
             item["attr"]["area"] = float(attr_data["Diện tích"].split(" ")[0])
             
+        if 'Diện tích đất' in attr_data:
+            item["attr"]["area"] = float(attr_data["Diện tích đất"].split(" ")[0])
+        
         if 'Diện tích sử dụng' in attr_data:
             value = float(attr_data["Diện tích sử dụng"].split(" ")[0])
             if item["attr"]["area"] > value:
@@ -164,7 +182,7 @@ def nhatot_item(url):
         
         if 'Đặc điểm nhà/đất' in attr_data:
             item["location"]["description"] = attr_data["Đặc điểm nhà/đất"]
-           
+            
         if 'Đặc điểm căn hộ' in attr_data:
             item["location"]["description"] = attr_data["Đặc điểm căn hộ"]
             
@@ -216,5 +234,3 @@ def nhatot_item(url):
             pass
         
     return item
-    
-    
