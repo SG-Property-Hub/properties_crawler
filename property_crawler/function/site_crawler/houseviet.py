@@ -157,11 +157,11 @@ def houseviet_item(url):
     
     item["attr"] ={}
     area = soup.find_all("div",class_="highlight-value")[1].get_text()
-    item["attr"]["area"]= float(area.split(" ")[0].replace(",","."))
+    item["attr"]["area"]= float(area.split(" ")[0].replace(".","").replace(",","."))
     item["attr"]["site_id"] = detail[0].find("span").get_text()
     try:
         if 'Diện tích sử dụng:' in main_info:
-            item["attr"]["area"] = float(main_info["Diện tích sử dụng:"].split(" ")[0].replace(",","."))
+            item["attr"]["area"] = float(main_info["Diện tích sử dụng:"].split(" ")[0].replace(".","").replace(",","."))
             
         if 'Mặt tiền: ' in main_info:
             item["attr"]["width"]= int(main_info["Mặt tiền: "].split(" ")[0])
