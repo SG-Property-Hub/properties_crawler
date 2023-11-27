@@ -2,7 +2,7 @@ beautifulsoup4
 boto3
 meilisearch
 Pillow
-pydantic
+pydantic==1.10.11
 pymongo
 celery[redis]
 Celery
