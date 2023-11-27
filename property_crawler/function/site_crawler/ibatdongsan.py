@@ -18,7 +18,7 @@ def ibatdongsan_list(url = None):
     products = []
     urls = []
     try:
-        num_cur_page = int(crawl_url.split("=")[1])
+        num_cur_page = int(crawl_url.split("/p")[1].split(".")[0])
     except:
         num_cur_page = 1
     next_page = None  
