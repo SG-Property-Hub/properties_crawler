@@ -41,7 +41,7 @@ def nhatot_list(url = None):
     #2: 200 status code and products is not empty or current page is smaller than max_num_page
         for product in products["ads"]:
             try:
-                url = f'https://www.nhatot.com/{product["list_id"]}.htm#px=SR-stickyad-[PO-1][PL-top]'
+                url = f'https://www.nhatot.com/{product["list_id"]}.htm'
                 urls.append(url)
             except:
                 pass
@@ -78,7 +78,7 @@ def nhatot_item(url):
     
     item["title"] = data["ad"]['subject']
     
-    item["url"] = "https://www.nhatot.com/{}.htm#px=SR-stickyad-[PO-1][PL-top]".format(data["ad"]["list_id"])
+    item["url"] = "https://www.nhatot.com/{}.htm".format(data["ad"]["list_id"])
     
     item["site"] = 'nhatot'
     
@@ -143,10 +143,10 @@ def nhatot_item(url):
         if 'Diện tích sử dụng' in attr_data:
             value = float(attr_data["Diện tích sử dụng"].split(" ")[0])
             if item["attr"]["area"] > value:
-                item["attr"]["area"] = item["attr"]["total_area"]
-                item["attr"]["total_area"]= value
+                item["attr"]["total_area"] = item["attr"]["area"]
+                item["attr"]["area"]= value
             else:
-                item["attr"]["area"] = value
+                item["attr"]["total_area"] = value
         
         if 'Chiều ngang' in attr_data:
             item["attr"]["width"] = float(attr_data['Chiều ngang'].split(" ")[0])

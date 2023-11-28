@@ -131,15 +131,17 @@ def raovat_item(url):
     address = soup.find("p",class_="info-location").get_text().split(": ")[1]
     item["location"] = convert_address_info(address)
     
+    item["attr"] = {}
     try:
         main_info = {}
         main_info_string = soup.find_all("li",class_="item-attribute")
         for i in main_info_string:
             temp = i.find_all("span")
-            main_info[temp[0].get_text().strip()] = temp[1].get_text().strip()
+            try:
+                main_info[temp[0].get_text().strip()] = temp[1].get_text().strip()
+            except:
+                continue
         
-        item["attr"] = {}
-    
         if 'Diện tích căn hộ(m²):' in main_info:
             item["attr"]["area"] = float(main_info["Diện tích căn hộ(m²):"].replace(",","."))
             item["attr"]["total_area"] = float(main_info["Diện tích căn hộ(m²):"].replace(",","."))
@@ -154,8 +156,13 @@ def raovat_item(url):
             item["attr"]["bathroom"] = int(main_info["Phòng tắm:"])
         
         if 'Phòng ngủ:' in main_info:
-            item["attr"]["bedroom"] = main_info["Phòng ngủ:"]
+            item["attr"]["bedroom"] = int(main_info["Phòng ngủ:"])
         
+        if 'Số tầng:' in main_info:
+            if item["property_type"] == 'Căn hộ chung cư':
+                item["attr"]["floor_num"] = int(main_info["Số tầng:"])
+            else:
+                item["attr"]["floor"] = int(main_info["Số tầng:"])
     except Exception as e:
         print('Error when parse attr', e)
         pass
