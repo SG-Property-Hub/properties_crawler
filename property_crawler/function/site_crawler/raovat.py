@@ -42,7 +42,7 @@ def raovat_list(url = None):
     soup = BeautifulSoup(res.text,"html.parser")
     products =soup.find("div",class_="list-item-post").find_all("div",class_="item-post")
 
-    if products:
+    if products and res.url == url:
         for product in products:
             url = 'https://raovat.vnexpress.net'+ product.find("a")["href"]
             urls.append(url)
