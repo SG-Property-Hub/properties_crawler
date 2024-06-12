@@ -16,7 +16,7 @@ import random
 
 site_urls = {
     'mogi': [
-        'https://mogi.vn/mua-nha-dat?cp=6690'
+        'https://mogi.vn/mua-nha-dat?cp=1'
     ],
     'bds68':[
         'https://bds68.com.vn/nha-dat-ban?pg=1'
