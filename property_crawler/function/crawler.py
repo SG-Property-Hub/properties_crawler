@@ -91,7 +91,7 @@ class PropertyCrawlerItem(BaseModel):
     thumbnail: HttpUrl = None #automatic create thumbnail
     description: str
     property_type: str 
-    # property_type: Literal['apartment', 'house', 'land', 'shop']
+    # property_type: e
     publish_at: str = None
     initial_at: str
     update_at: str
