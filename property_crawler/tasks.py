@@ -126,6 +126,7 @@ def crawl_item(self, site, url, save_local = False):
 
         item['initial_at'] = datetime.datetime.now(
             pytz.timezone('Australia/Sydney')).strftime("%Y-%m-%d %H:%M:%S")
+        item['initial_date'] = item['initial_at'][:10]
         item['update_at'] = datetime.datetime.now(
             pytz.timezone('Australia/Sydney')).strftime("%Y-%m-%d %H:%M:%S")
 
